@@ -17,5 +17,10 @@ Respond with ONLY a JSON object of this shape:
  "confidence": "high|medium|low", "description": str, "fix": str, "fixed_code": str}]}"""
 
 
-def user_prompt(path, numbered_code):
-    return f"File: {path}\n\nCode (line-numbered):\n{numbered_code}\n\nReview this file for security flaws."
+def user_prompt(path, numbered_code, outline="", refs=""):
+    extra = ""
+    if outline:
+        extra += f"\nOther files in this project (context only, do not report on them):\n{outline}\n"
+    if refs:
+        extra += f"\nReference notes (hints, use only if they apply to this code):\n{refs}\n"
+    return f"File: {path}\n{extra}\nCode (line-numbered):\n{numbered_code}\n\nReview this file for security flaws."
