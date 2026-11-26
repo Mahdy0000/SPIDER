@@ -14,7 +14,7 @@ A privacy-first AI security agent that runs on local LLMs (Ollama). The goal: fi
 | IV | Remediation reporting (OWASP-mapped findings + fix per finding) | **Works**: text/JSON/Markdown reports, plus `--patch` unified diff |
 | - | Local RAG hints (bundled CWE/OWASP notes) | **Works** (keyword retrieval, 14 entries) |
 | I | Web application review (scope-enforced crawler, passive checks, LLM agent loop) | **Works (v0.3)**, see "Web review" |
-| III | Proof-of-concept verification to cut false positives | Planned |
+| III | Finding verification to cut false positives (`--verify`) | **Works (v0.4)**, re-check only, no exploit/PoC generation |
 | - | RAG knowledge base of vulnerability data, tool calling, ReAct loop | Planned |
 
 Phases follow the project concept doc; SAST is built first.
@@ -87,8 +87,8 @@ The unit tests use a fake Ollama server and a local test web server on 127.0.0.1
 
 ## Tested so far
 
-- Unit tests (fake Ollama server, local test web server): 23 pass. SAST: parsing, OWASP mapping, RAG retrieval, outline, patch diff, CLI flags. Web: allowlist (loopback, named hosts, too-broad entries, redirect to an out-of-scope host, request budget), crawler staying in scope, each check on a deliberately weak local server, agent grounding, CLI exit codes.
-- The web checks and agent loop have not been run against DVWA/Juice Shop or a real model yet.
+- Unit tests (fake Ollama server, local test web server): 30 pass. SAST: parsing, OWASP mapping, RAG retrieval, outline, patch diff, CLI flags. Web: allowlist (loopback, named hosts, too-broad entries, redirect to an out-of-scope host, request budget), crawler staying in scope, each check on a deliberately weak local server, agent grounding, CLI exit codes. Verification: reproduced / not reproduced, hiding, model verdict parsing, garbage output, CLI flags.
+- The web checks, agent loop and `--verify` have not been run against DVWA/Juice Shop or a real model yet, so how well the model second opinion filters false positives is unmeasured.
 - v0.2 features (RAG, outline, `--patch`, benchmark) were only tested with the fake server, not yet with a real model. `benchmark/run.py` has not been run against a real model.
 - Real run: CLI against a real Ollama 0.40.18 with `qwen2.5-coder:0.5b` on a 1-CPU Linux box. It ran end to end and returned OWASP-mapped findings, but with that tiny model the results were low quality (generic, some wrong lines). Not yet tested with the default model (`dolphinlabs/llama3.2-3b-uncensored`) or any 7B+ model.
 
@@ -102,7 +102,8 @@ The unit tests use a fake Ollama server and a local test web server on 127.0.0.1
 2. Patch output (unified diffs): **done (v0.2)**.
 3. RAG over CWE/OWASP data: **done (v0.2)**, simple keyword retrieval, no embeddings yet.
 4. Web review: crawler, passive checks and agent loop with an enforced allowlist: **done (v0.3)**. Tested against a local test server and a fake model only.
-5. Verification stage: **not started, on hold**.
+5. Verification stage: **done (v0.4)** as re-check plus model second opinion; no PoC execution by design. Tested with a local test server and a fake model only.
+6. Report improvements: planned (v0.5).
 
 ## License
 
