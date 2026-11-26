@@ -2,7 +2,7 @@ import json
 import os
 import re
 
-from . import ollama
+from . import context, knowledge, ollama
 from .owasp import normalize_owasp
 from .prompt import SYSTEM_PROMPT, user_prompt
 
@@ -75,13 +75,15 @@ def clean(item, path, total_lines):
     }
 
 
-def scan_file(path, host, model, timeout=300):
+def scan_file(path, host, model, timeout=300, project_files=None, root=None, use_rag=True):
     with open(path, encoding="utf-8", errors="replace") as f:
         lines = f.read().splitlines()
     results = []
+    outline = context.project_outline(project_files, path, root) if project_files else ""
     for start, part in chunks(lines):
         numbered = "\n".join(f"{start + i + 1}: {l}" for i, l in enumerate(part))
-        raw = ollama.chat(host, model, SYSTEM_PROMPT, user_prompt(path, numbered), timeout)
+        refs = knowledge.format_refs(knowledge.retrieve("\n".join(part))) if use_rag else ""
+        raw = ollama.chat(host, model, SYSTEM_PROMPT, user_prompt(path, numbered, outline, refs), timeout)
         results += [clean(i, path, len(lines)) for i in parse_findings(raw)]
     seen, uniq = set(), []
     for r in results:
