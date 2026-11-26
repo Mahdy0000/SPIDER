@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "spider-sec"
-version = "0.1.0"
+version = "0.2.0"
 description = "S.P.I.D.E.R - local-LLM defensive code security reviewer (phase 1: SAST)"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -16,3 +16,6 @@ spider = "spider.cli:main"
 
 [tool.setuptools]
 packages = ["spider"]
+
+[tool.setuptools.package-data]
+spider = ["data/*.json"]
