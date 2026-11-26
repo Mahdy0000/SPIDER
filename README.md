@@ -32,7 +32,7 @@ Output: `text` (default), `json`, `markdown`. `--fail-on <severity>` exits 2 for
 ## Limitations (read this)
 
 - Findings are LLM output. They can be wrong or miss real bugs. Treat them as leads to verify, not a verdict.
-- Quality depends on the model. A 0.5B model runs anywhere but gives weak results (wrong line numbers, vague findings). Use a 7B+ coder model for real reviews.
+- Quality depends on the model. Small models (0.5B-3B) run anywhere but give weaker results (wrong line numbers, vague findings). For better reviews try a bigger model, e.g. `--model dolphin3` (Llama 3.1 8B) or a 7B+ coder model. The default is an uncensored Llama 3.2 3B community build; it is only a model choice, the tool still only does defensive review.
 - Files are split into 300-line chunks; cross-file data flow is not analysed yet.
 - No RAG, no DAST, no exploitation or PoC generation. The prompt forbids exploit output.
 
@@ -43,12 +43,12 @@ Requirements: Python 3.9+, [Ollama](https://ollama.com).
 ```bash
 git clone https://github.com/Mahdy0000/SPIDER.git
 cd SPIDER
-ollama pull qwen2.5-coder:7b        # or any model you prefer
+ollama pull dolphinlabs/llama3.2-3b-uncensored        # or any model you prefer
 ollama serve                        # if not already running
 
 python -m spider tests/fixtures/vulnerable_app.py
 python -m spider ./your_project --format markdown -o report.md
-python -m spider ./your_project --model qwen2.5-coder:14b --fail-on high
+python -m spider ./your_project --model dolphin3 --fail-on high
 
 # optional: install the `spider` command
 pip install -e .
@@ -67,7 +67,7 @@ The unit tests use a fake Ollama server (no model needed). They check parsing, O
 ## Tested so far
 
 - Unit tests (fake Ollama server): pass.
-- Real run: CLI against a real Ollama 0.40.18 with `qwen2.5-coder:0.5b` on a 1-CPU Linux box. It ran end to end and returned OWASP-mapped findings, but with that tiny model the results were low quality (generic, some wrong lines). Not yet tested with 7B+ models.
+- Real run: CLI against a real Ollama 0.40.18 with `qwen2.5-coder:0.5b` on a 1-CPU Linux box. It ran end to end and returned OWASP-mapped findings, but with that tiny model the results were low quality (generic, some wrong lines). Not yet tested with the default model (`dolphinlabs/llama3.2-3b-uncensored`) or any 7B+ model.
 
 ## Roadmap
 
