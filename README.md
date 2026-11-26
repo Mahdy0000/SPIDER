@@ -50,7 +50,7 @@ python -m spider web http://localhost:3000 --no-probe                   # passiv
 
 
 - Findings are LLM output. They can be wrong or miss real bugs. Treat them as leads to verify, not a verdict.
-- Quality depends on the model. Small models (0.5B-3B) run anywhere but give weaker results (wrong line numbers, vague findings). For better reviews try a bigger model, e.g. `--model dolphin3` (Llama 3.1 8B) or a 7B+ coder model. The default is an uncensored Llama 3.2 3B community build; it is only a model choice, the tool still only does defensive review.
+- Quality depends on the model. Small models (0.5B-3B) run anywhere but give weaker results (wrong line numbers, vague findings). For better reviews try a bigger model, e.g. `--model dolphin3` (Llama 3.1 8B) or a 7B+ coder model. The default is an uncensored Llama 3.2 3B community build, or your fine-tuned `spider-reviewer` when it is installed in Ollama; it is only a model choice, the tool still only does defensive review.
 - Files are split into 300-line chunks. Cross-file context is only an outline (defined names + imports of the other files), not real data-flow analysis.
 - `--patch` replaces the reported lines with the model's `fixed_code`. It can be wrong or not apply cleanly; it never edits your files, review before `git apply`.
 - Web review is read-only and passive-leaning (GET only, harmless markers). It does not exploit anything, send attack payloads, guess credentials or fuzz. No exploitation or PoC generation anywhere; the prompts forbid exploit output.
@@ -95,7 +95,22 @@ The unit tests use a fake Ollama server and a local test web server on 127.0.0.1
 
 ## Dataset
 
-`dataset/` holds 1542 labeled samples (105 original, 89 OWASP Juice Shop, 100 Big-Vul, 60 NIST Juliet, 1188 CyberNative with heuristic labels; `python dataset/merge.py` writes them all into one `dataset/all.jsonl`) with per-source licenses, plus a script to pull more (OWASP Benchmark, CodeXGLUE/Devign, DiverseVul, Draper). Prepared for retrieval later; not used by the tool yet. Counts, format, licenses: `dataset/README.md`.
+`dataset/` holds 1542 labeled samples (105 original, 89 OWASP Juice Shop, 100 Big-Vul, 60 NIST Juliet, 1188 CyberNative with heuristic labels; `python dataset/merge.py` writes them all into one `dataset/all.jsonl`) with per-source licenses, plus a script to pull more (OWASP Benchmark, CodeXGLUE/Devign, DiverseVul, Draper). Used to fine-tune the reviewer model (see "Fine-tuning"); not used for retrieval yet. Counts, format, licenses: `dataset/README.md`.
+
+## Fine-tuning (train the model on the dataset)
+
+`training/` turns `dataset/` into instruction-tuning data in the tool's own prompt/JSON format, fine-tunes the Llama 3.2 3B base with QLoRA on a free Colab T4 (`training/spider_finetune_colab.ipynb`), converts it to GGUF (Q4_K_M) and an Ollama model named `spider-reviewer`, which the tool then uses by default (`--model` and `SPIDER_MODEL` still override). `training/evaluate.py` records recall/precision before and after.
+
+```bash
+python training/prep_data.py                      # data, CPU, seconds
+# train on Colab: open training/spider_finetune_colab.ipynb (T4 GPU), run all cells, download the .gguf + Modelfile
+ollama create spider-reviewer -f Modelfile        # on your PC, next to the .gguf
+python training/evaluate.py --model dolphinlabs/llama3.2-3b-uncensored --label before
+python training/evaluate.py --model spider-reviewer --label after
+python training/evaluate.py --compare before after
+```
+
+Honest status: the data prep, training loop (on a tiny model), merge, tokenisation and GGUF conversion are tested; the real 3B training run, the quantised model quality and the before/after numbers are not yet measured. The benchmark has one file and 4 expected findings, so treat deltas as a sanity check. Details, caveats, local-GPU needs: `training/README.md`.
 
 ## Roadmap
 
