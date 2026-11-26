@@ -27,7 +27,7 @@ def build_parser():
     p.add_argument("--timeout", type=int, default=300)
     p.add_argument("--verify", action="store_true", help="re-check each finding on a fresh request before reporting")
     p.add_argument("--hide-false-positives", action="store_true", help="with --verify: drop findings that did not reproduce")
-    p.add_argument("--format", choices=["text", "json", "markdown"], default="text")
+    p.add_argument("--format", choices=list(report.RENDERERS), default="text")
     p.add_argument("-o", "--output")
     p.add_argument("--fail-on", choices=scanner.SEVERITIES)
     return p

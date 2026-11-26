@@ -22,7 +22,7 @@ def code_main(argv):
     p.add_argument("--model", default=os.environ.get("SPIDER_MODEL", "dolphinlabs/llama3.2-3b-uncensored"),
                    help="Ollama model (default: dolphinlabs/llama3.2-3b-uncensored, env SPIDER_MODEL)")
     p.add_argument("--host", default=os.environ.get("OLLAMA_HOST", "http://localhost:11434"))
-    p.add_argument("--format", choices=["text", "json", "markdown"], default="text")
+    p.add_argument("--format", choices=list(report.RENDERERS), default="text")
     p.add_argument("-o", "--output", help="write report to this file")
     p.add_argument("--timeout", type=int, default=300, help="per-request timeout seconds")
     p.add_argument("--fail-on", choices=scanner.SEVERITIES, help="exit 2 if a finding at/above this severity exists")
@@ -63,7 +63,7 @@ def code_main(argv):
             return 1
     findings = scanner.sort_findings(findings)
     meta = {"model": a.model, "files": len(files), "tool": "spider", "version": __version__}
-    render = {"text": report.to_text, "json": report.to_json, "markdown": report.to_markdown}[a.format]
+    render = report.RENDERERS[a.format]
     out = render(findings, meta)
     if a.output:
         with open(a.output, "w", encoding="utf-8") as fh:
