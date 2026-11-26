@@ -8,6 +8,9 @@ DROPPED = ("not_reproduced", "likely_false_positive")
 STRONG = ("reproduced", "likely_real")
 
 
+from .owasp import owasp_2025
+
+
 def _loc(f):
     if f.get("kind") == "web":
         return f["file"]
@@ -75,7 +78,7 @@ def to_markdown(findings, meta):
     out.append("## Findings")
     out.append("")
     for i, f in enumerate(findings, 1):
-        out += [f"### {i}. [{f['severity'].upper()}] {f['title']}", "", f"- Location: `{_loc(f)}`", f"- OWASP: {f['owasp']}"]
+        out += [f"### {i}. [{f['severity'].upper()}] {f['title']}", "", f"- Location: `{_loc(f)}`", f"- OWASP: {f['owasp']} (2025 list: {owasp_2025(f['owasp'], f['cwe'])})"]
         if f["cwe"]:
             out.append(f"- CWE: {f['cwe']}")
         out += [f"- Confidence: {f['confidence']}"] + _verif_md(f)
