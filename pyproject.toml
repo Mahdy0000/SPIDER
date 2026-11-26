@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spider-sec"
+version = "0.1.0"
+description = "S.P.I.D.E.R - local-LLM defensive code security reviewer (phase 1: SAST)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+dependencies = []
+
+[project.scripts]
+spider = "spider.cli:main"
+
+[tool.setuptools]
+packages = ["spider"]
