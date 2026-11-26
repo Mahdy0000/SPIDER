@@ -1,4 +1,4 @@
-"""Builds dataset/juiceshop.jsonl from OWASP Juice Shop's coding-challenge snippets (MIT).
+"""Builds dataset/juiceshop_1.jsonl, juiceshop_2.jsonl from OWASP Juice Shop's coding-challenge snippets (MIT).
 Usage: git clone --depth 1 https://github.com/juice-shop/juice-shop.git /tmp/js && python dataset/build_juiceshop.py /tmp/js
 Needs PyYAML (build time only).
 
@@ -52,7 +52,18 @@ for info in sorted(glob.glob(os.path.join(root, "data/static/codefixes/*.info.ym
                     "notes": expl.get(i, ""),
                     "source": f"https://github.com/juice-shop/juice-shop/tree/master/data/static/codefixes ({key}_{i})",
                     "license": "MIT (c) Bjoern Kimminich & the OWASP Juice Shop contributors"})
-with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "juiceshop.jsonl"), "w", encoding="utf-8") as f:
-    for r in out:
-        f.write(json.dumps(r, ensure_ascii=False) + "\n")
-print(len(out), "pairs")
+# write in parts under ~200 KB each (keeps files easy to view and upload)
+parts, cur, size = [], [], 0
+for r in out:
+    line = json.dumps(r, ensure_ascii=False) + "\n"
+    if size + len(line.encode()) > 200_000 and cur:
+        parts.append(cur)
+        cur, size = [], 0
+    cur.append(line)
+    size += len(line.encode())
+parts.append(cur)
+here = os.path.dirname(os.path.abspath(__file__))
+for k, lines in enumerate(parts, 1):
+    with open(os.path.join(here, f"juiceshop_{k}.jsonl"), "w", encoding="utf-8") as f:
+        f.writelines(lines)
+print(len(out), "pairs in", len(parts), "files")
