@@ -1,0 +1,1193 @@
+{
+ "about": "Classification crosswalk used by SPIDER, built from the official sources named below.",
+ "owasp_2021": {
+  "names": {
+   "A01": "Broken Access Control",
+   "A02": "Cryptographic Failures",
+   "A03": "Injection",
+   "A04": "Insecure Design",
+   "A05": "Security Misconfiguration",
+   "A06": "Vulnerable and Outdated Components",
+   "A07": "Identification and Authentication Failures",
+   "A08": "Software and Data Integrity Failures",
+   "A09": "Security Logging and Monitoring Failures",
+   "A10": "Server-Side Request Forgery"
+  },
+  "cwes": {
+   "A01": [
+    22,
+    23,
+    35,
+    36,
+    200,
+    201,
+    219,
+    264,
+    275,
+    284,
+    285,
+    352,
+    359,
+    377,
+    402,
+    425,
+    441,
+    497,
+    538,
+    540,
+    548,
+    552,
+    566,
+    601,
+    639,
+    651,
+    668,
+    706,
+    862,
+    863,
+    913,
+    922,
+    1275
+   ],
+   "A02": [
+    259,
+    261,
+    296,
+    310,
+    311,
+    312,
+    319,
+    320,
+    321,
+    322,
+    323,
+    324,
+    325,
+    326,
+    327,
+    328,
+    329,
+    330,
+    331,
+    335,
+    336,
+    337,
+    338,
+    340,
+    347,
+    523,
+    720,
+    757,
+    759,
+    760,
+    780,
+    818,
+    916
+   ],
+   "A03": [
+    20,
+    74,
+    75,
+    77,
+    78,
+    79,
+    80,
+    83,
+    87,
+    88,
+    89,
+    90,
+    91,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    113,
+    116,
+    138,
+    184,
+    470,
+    471,
+    564,
+    610,
+    643,
+    644,
+    652,
+    917
+   ],
+   "A04": [
+    73,
+    183,
+    209,
+    213,
+    235,
+    256,
+    257,
+    266,
+    269,
+    280,
+    311,
+    312,
+    313,
+    316,
+    419,
+    430,
+    434,
+    444,
+    451,
+    472,
+    501,
+    522,
+    525,
+    539,
+    579,
+    598,
+    602,
+    642,
+    646,
+    650,
+    653,
+    656,
+    657,
+    799,
+    807,
+    840,
+    841,
+    927,
+    1021,
+    1173
+   ],
+   "A05": [
+    2,
+    11,
+    13,
+    15,
+    16,
+    260,
+    315,
+    520,
+    526,
+    537,
+    541,
+    547,
+    611,
+    614,
+    756,
+    776,
+    942,
+    1004,
+    1032,
+    1174
+   ],
+   "A06": [
+    937,
+    1035,
+    1104
+   ],
+   "A07": [
+    255,
+    259,
+    287,
+    288,
+    290,
+    294,
+    295,
+    297,
+    300,
+    302,
+    304,
+    306,
+    307,
+    346,
+    384,
+    521,
+    613,
+    620,
+    640,
+    798,
+    940,
+    1216
+   ],
+   "A08": [
+    345,
+    353,
+    426,
+    494,
+    502,
+    565,
+    784,
+    829,
+    830,
+    915
+   ],
+   "A09": [
+    117,
+    223,
+    532,
+    778
+   ],
+   "A10": [
+    918
+   ]
+  },
+  "source": "https://owasp.org/Top10/2021/ ; CWE lists are SPIDER's partial copy of the per-category lists (dataset/fetch.py)"
+ },
+ "owasp_2025": {
+  "names": {
+   "A01": "Broken Access Control",
+   "A02": "Security Misconfiguration",
+   "A03": "Software Supply Chain Failures",
+   "A04": "Cryptographic Failures",
+   "A05": "Injection",
+   "A06": "Insecure Design",
+   "A07": "Authentication Failures",
+   "A08": "Software or Data Integrity Failures",
+   "A09": "Security Logging and Alerting Failures",
+   "A10": "Mishandling of Exceptional Conditions"
+  },
+  "cwes": {
+   "A01": [
+    22,
+    23,
+    36,
+    59,
+    61,
+    65,
+    200,
+    201,
+    219,
+    276,
+    281,
+    282,
+    283,
+    284,
+    285,
+    352,
+    359,
+    377,
+    379,
+    402,
+    424,
+    425,
+    441,
+    497,
+    538,
+    540,
+    548,
+    552,
+    566,
+    601,
+    615,
+    639,
+    668,
+    732,
+    749,
+    862,
+    863,
+    918,
+    922,
+    1275
+   ],
+   "A02": [
+    5,
+    11,
+    13,
+    15,
+    16,
+    260,
+    315,
+    489,
+    526,
+    547,
+    611,
+    614,
+    776,
+    942,
+    1004,
+    1174
+   ],
+   "A03": [
+    447,
+    1035,
+    1104,
+    1329,
+    1357,
+    1395
+   ],
+   "A04": [
+    261,
+    296,
+    319,
+    320,
+    321,
+    322,
+    323,
+    324,
+    325,
+    326,
+    327,
+    328,
+    329,
+    330,
+    331,
+    332,
+    334,
+    335,
+    336,
+    337,
+    338,
+    340,
+    342,
+    347,
+    523,
+    757,
+    759,
+    760,
+    780,
+    916,
+    1240,
+    1241
+   ],
+   "A05": [
+    20,
+    74,
+    76,
+    77,
+    78,
+    79,
+    80,
+    83,
+    86,
+    88,
+    89,
+    90,
+    91,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    103,
+    104,
+    112,
+    113,
+    114,
+    115,
+    116,
+    129,
+    159,
+    470,
+    493,
+    500,
+    564,
+    610,
+    643,
+    644,
+    917
+   ],
+   "A06": [
+    73,
+    183,
+    256,
+    266,
+    269,
+    286,
+    311,
+    312,
+    313,
+    316,
+    362,
+    382,
+    419,
+    434,
+    436,
+    444,
+    451,
+    454,
+    472,
+    501,
+    522,
+    525,
+    539,
+    598,
+    602,
+    628,
+    642,
+    646,
+    653,
+    656,
+    657,
+    676,
+    693,
+    799,
+    807,
+    841,
+    1021,
+    1022,
+    1125
+   ],
+   "A07": [
+    258,
+    259,
+    287,
+    288,
+    289,
+    290,
+    291,
+    293,
+    294,
+    295,
+    297,
+    298,
+    299,
+    300,
+    302,
+    303,
+    304,
+    305,
+    306,
+    307,
+    308,
+    309,
+    346,
+    350,
+    384,
+    521,
+    613,
+    620,
+    640,
+    798,
+    940,
+    941,
+    1390,
+    1391,
+    1392,
+    1393
+   ],
+   "A08": [
+    345,
+    353,
+    426,
+    427,
+    494,
+    502,
+    506,
+    509,
+    565,
+    784,
+    829,
+    830,
+    915,
+    926
+   ],
+   "A09": [
+    117,
+    221,
+    223,
+    532,
+    778
+   ],
+   "A10": [
+    209,
+    215,
+    234,
+    235,
+    248,
+    252,
+    274,
+    280,
+    369,
+    390,
+    391,
+    394,
+    396,
+    397,
+    460,
+    476,
+    478,
+    484,
+    550,
+    636,
+    703,
+    754,
+    755,
+    756
+   ]
+  },
+  "status": "official final release (owasp.org/Top10/2025); 2021 is marked superseded",
+  "source": "https://github.com/OWASP/Top10/tree/master/2025/docs/en (section 'List of Mapped CWEs' of each category page); https://owasp.org/Top10/2025/"
+ },
+ "owasp_2021_to_2025_category_crosswalk": {
+  "A01": "A01",
+  "A02": "A04",
+  "A03": "A05",
+  "A04": "A06",
+  "A05": "A02",
+  "A06": "A03",
+  "A07": "A07",
+  "A08": "A08",
+  "A09": "A09",
+  "A10": "A01"
+ },
+ "crosswalk_source": "https://owasp.org/Top10/2025/0x00_2025-Introduction/ (what changed: SSRF merged into A01; A06:2021 expanded into A03:2025; A02:2021 now A04:2025; A03:2021 now A05:2025; A04:2021 now A06:2025; A05:2021 now A02:2025)",
+ "cwe_top25": {
+  "note": "MITRE CWE Top 25 Most Dangerous Software Weaknesses. Annual. Newest edition verified: 2025. No 2026 edition exists yet.",
+  "editions": {
+   "2021": {
+    "source": "https://cwe.mitre.org/top25/archive/2021/2021_cwe_top25.html",
+    "top25": [
+     {
+      "rank": 1,
+      "cwe": "CWE-787",
+      "name": "Out-of-bounds Write"
+     },
+     {
+      "rank": 2,
+      "cwe": "CWE-79",
+      "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+     },
+     {
+      "rank": 3,
+      "cwe": "CWE-125",
+      "name": "Out-of-bounds Read"
+     },
+     {
+      "rank": 4,
+      "cwe": "CWE-20",
+      "name": "Improper Input Validation"
+     },
+     {
+      "rank": 5,
+      "cwe": "CWE-78",
+      "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+     },
+     {
+      "rank": 6,
+      "cwe": "CWE-89",
+      "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+     },
+     {
+      "rank": 7,
+      "cwe": "CWE-416",
+      "name": "Use After Free"
+     },
+     {
+      "rank": 8,
+      "cwe": "CWE-22",
+      "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+     },
+     {
+      "rank": 9,
+      "cwe": "CWE-352",
+      "name": "Cross-Site Request Forgery (CSRF)"
+     },
+     {
+      "rank": 10,
+      "cwe": "CWE-434",
+      "name": "Unrestricted Upload of File with Dangerous Type"
+     },
+     {
+      "rank": 11,
+      "cwe": "CWE-306",
+      "name": "Missing Authentication for Critical Function"
+     },
+     {
+      "rank": 12,
+      "cwe": "CWE-190",
+      "name": "Integer Overflow or Wraparound"
+     },
+     {
+      "rank": 13,
+      "cwe": "CWE-502",
+      "name": "Deserialization of Untrusted Data"
+     },
+     {
+      "rank": 14,
+      "cwe": "CWE-287",
+      "name": "Improper Authentication"
+     },
+     {
+      "rank": 15,
+      "cwe": "CWE-476",
+      "name": "NULL Pointer Dereference"
+     },
+     {
+      "rank": 16,
+      "cwe": "CWE-798",
+      "name": "Use of Hard-coded Credentials"
+     },
+     {
+      "rank": 17,
+      "cwe": "CWE-119",
+      "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+     },
+     {
+      "rank": 18,
+      "cwe": "CWE-862",
+      "name": "Missing Authorization"
+     },
+     {
+      "rank": 19,
+      "cwe": "CWE-276",
+      "name": "Incorrect Default Permissions"
+     },
+     {
+      "rank": 20,
+      "cwe": "CWE-200",
+      "name": "Exposure of Sensitive Information to an Unauthorized Actor"
+     },
+     {
+      "rank": 21,
+      "cwe": "CWE-522",
+      "name": "Insufficiently Protected Credentials"
+     },
+     {
+      "rank": 22,
+      "cwe": "CWE-732",
+      "name": "Incorrect Permission Assignment for Critical Resource"
+     },
+     {
+      "rank": 23,
+      "cwe": "CWE-611",
+      "name": "Improper Restriction of XML External Entity Reference"
+     },
+     {
+      "rank": 24,
+      "cwe": "CWE-918",
+      "name": "Server-Side Request Forgery (SSRF)"
+     },
+     {
+      "rank": 25,
+      "cwe": "CWE-77",
+      "name": "Improper Neutralization of Special Elements used in a Command ('Command Injection')"
+     }
+    ]
+   },
+   "2022": {
+    "source": "https://cwe.mitre.org/top25/archive/2022/2022_cwe_top25.html",
+    "top25": [
+     {
+      "rank": 1,
+      "cwe": "CWE-787",
+      "name": "Out-of-bounds Write"
+     },
+     {
+      "rank": 2,
+      "cwe": "CWE-79",
+      "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+     },
+     {
+      "rank": 3,
+      "cwe": "CWE-89",
+      "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+     },
+     {
+      "rank": 4,
+      "cwe": "CWE-20",
+      "name": "Improper Input Validation"
+     },
+     {
+      "rank": 5,
+      "cwe": "CWE-125",
+      "name": "Out-of-bounds Read"
+     },
+     {
+      "rank": 6,
+      "cwe": "CWE-78",
+      "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+     },
+     {
+      "rank": 7,
+      "cwe": "CWE-416",
+      "name": "Use After Free"
+     },
+     {
+      "rank": 8,
+      "cwe": "CWE-22",
+      "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+     },
+     {
+      "rank": 9,
+      "cwe": "CWE-352",
+      "name": "Cross-Site Request Forgery (CSRF)"
+     },
+     {
+      "rank": 10,
+      "cwe": "CWE-434",
+      "name": "Unrestricted Upload of File with Dangerous Type"
+     },
+     {
+      "rank": 11,
+      "cwe": "CWE-476",
+      "name": "NULL Pointer Dereference"
+     },
+     {
+      "rank": 12,
+      "cwe": "CWE-502",
+      "name": "Deserialization of Untrusted Data"
+     },
+     {
+      "rank": 13,
+      "cwe": "CWE-190",
+      "name": "Integer Overflow or Wraparound"
+     },
+     {
+      "rank": 14,
+      "cwe": "CWE-287",
+      "name": "Improper Authentication"
+     },
+     {
+      "rank": 15,
+      "cwe": "CWE-798",
+      "name": "Use of Hard-coded Credentials"
+     },
+     {
+      "rank": 16,
+      "cwe": "CWE-862",
+      "name": "Missing Authorization"
+     },
+     {
+      "rank": 17,
+      "cwe": "CWE-77",
+      "name": "Improper Neutralization of Special Elements used in a Command ('Command Injection')"
+     },
+     {
+      "rank": 18,
+      "cwe": "CWE-306",
+      "name": "Missing Authentication for Critical Function"
+     },
+     {
+      "rank": 19,
+      "cwe": "CWE-119",
+      "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+     },
+     {
+      "rank": 20,
+      "cwe": "CWE-276",
+      "name": "Incorrect Default Permissions"
+     },
+     {
+      "rank": 21,
+      "cwe": "CWE-918",
+      "name": "Server-Side Request Forgery (SSRF)"
+     },
+     {
+      "rank": 22,
+      "cwe": "CWE-362",
+      "name": "Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')"
+     },
+     {
+      "rank": 23,
+      "cwe": "CWE-400",
+      "name": "Uncontrolled Resource Consumption"
+     },
+     {
+      "rank": 24,
+      "cwe": "CWE-611",
+      "name": "Improper Restriction of XML External Entity Reference"
+     },
+     {
+      "rank": 25,
+      "cwe": "CWE-94",
+      "name": "Improper Control of Generation of Code ('Code Injection')"
+     }
+    ]
+   },
+   "2023": {
+    "source": "https://cwe.mitre.org/top25/archive/2023/2023_cwe_top25.html",
+    "top25": [
+     {
+      "rank": 1,
+      "cwe": "CWE-787",
+      "name": "Out-of-bounds Write"
+     },
+     {
+      "rank": 2,
+      "cwe": "CWE-79",
+      "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+     },
+     {
+      "rank": 3,
+      "cwe": "CWE-89",
+      "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+     },
+     {
+      "rank": 4,
+      "cwe": "CWE-416",
+      "name": "Use After Free"
+     },
+     {
+      "rank": 5,
+      "cwe": "CWE-78",
+      "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+     },
+     {
+      "rank": 6,
+      "cwe": "CWE-20",
+      "name": "Improper Input Validation"
+     },
+     {
+      "rank": 7,
+      "cwe": "CWE-125",
+      "name": "Out-of-bounds Read"
+     },
+     {
+      "rank": 8,
+      "cwe": "CWE-22",
+      "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+     },
+     {
+      "rank": 9,
+      "cwe": "CWE-352",
+      "name": "Cross-Site Request Forgery (CSRF)"
+     },
+     {
+      "rank": 10,
+      "cwe": "CWE-434",
+      "name": "Unrestricted Upload of File with Dangerous Type"
+     },
+     {
+      "rank": 11,
+      "cwe": "CWE-862",
+      "name": "Missing Authorization"
+     },
+     {
+      "rank": 12,
+      "cwe": "CWE-476",
+      "name": "NULL Pointer Dereference"
+     },
+     {
+      "rank": 13,
+      "cwe": "CWE-287",
+      "name": "Improper Authentication"
+     },
+     {
+      "rank": 14,
+      "cwe": "CWE-190",
+      "name": "Integer Overflow or Wraparound"
+     },
+     {
+      "rank": 15,
+      "cwe": "CWE-502",
+      "name": "Deserialization of Untrusted Data"
+     },
+     {
+      "rank": 16,
+      "cwe": "CWE-77",
+      "name": "Improper Neutralization of Special Elements used in a Command ('Command Injection')"
+     },
+     {
+      "rank": 17,
+      "cwe": "CWE-119",
+      "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+     },
+     {
+      "rank": 18,
+      "cwe": "CWE-798",
+      "name": "Use of Hard-coded Credentials"
+     },
+     {
+      "rank": 19,
+      "cwe": "CWE-918",
+      "name": "Server-Side Request Forgery (SSRF)"
+     },
+     {
+      "rank": 20,
+      "cwe": "CWE-306",
+      "name": "Missing Authentication for Critical Function"
+     },
+     {
+      "rank": 21,
+      "cwe": "CWE-362",
+      "name": "Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')"
+     },
+     {
+      "rank": 22,
+      "cwe": "CWE-269",
+      "name": "Improper Privilege Management"
+     },
+     {
+      "rank": 23,
+      "cwe": "CWE-94",
+      "name": "Improper Control of Generation of Code ('Code Injection')"
+     },
+     {
+      "rank": 24,
+      "cwe": "CWE-863",
+      "name": "Incorrect Authorization"
+     },
+     {
+      "rank": 25,
+      "cwe": "CWE-276",
+      "name": "Incorrect Default Permissions"
+     }
+    ]
+   },
+   "2024": {
+    "source": "https://cwe.mitre.org/top25/archive/2024/2024_cwe_top25.html",
+    "top25": [
+     {
+      "rank": 1,
+      "cwe": "CWE-79",
+      "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+     },
+     {
+      "rank": 2,
+      "cwe": "CWE-787",
+      "name": "Out-of-bounds Write"
+     },
+     {
+      "rank": 3,
+      "cwe": "CWE-89",
+      "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+     },
+     {
+      "rank": 4,
+      "cwe": "CWE-352",
+      "name": "Cross-Site Request Forgery (CSRF)"
+     },
+     {
+      "rank": 5,
+      "cwe": "CWE-22",
+      "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+     },
+     {
+      "rank": 6,
+      "cwe": "CWE-125",
+      "name": "Out-of-bounds Read"
+     },
+     {
+      "rank": 7,
+      "cwe": "CWE-78",
+      "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+     },
+     {
+      "rank": 8,
+      "cwe": "CWE-416",
+      "name": "Use After Free"
+     },
+     {
+      "rank": 9,
+      "cwe": "CWE-862",
+      "name": "Missing Authorization"
+     },
+     {
+      "rank": 10,
+      "cwe": "CWE-434",
+      "name": "Unrestricted Upload of File with Dangerous Type"
+     },
+     {
+      "rank": 11,
+      "cwe": "CWE-94",
+      "name": "Improper Control of Generation of Code ('Code Injection')"
+     },
+     {
+      "rank": 12,
+      "cwe": "CWE-20",
+      "name": "Improper Input Validation"
+     },
+     {
+      "rank": 13,
+      "cwe": "CWE-77",
+      "name": "Improper Neutralization of Special Elements used in a Command ('Command Injection')"
+     },
+     {
+      "rank": 14,
+      "cwe": "CWE-287",
+      "name": "Improper Authentication"
+     },
+     {
+      "rank": 15,
+      "cwe": "CWE-269",
+      "name": "Improper Privilege Management"
+     },
+     {
+      "rank": 16,
+      "cwe": "CWE-502",
+      "name": "Deserialization of Untrusted Data"
+     },
+     {
+      "rank": 17,
+      "cwe": "CWE-200",
+      "name": "Exposure of Sensitive Information to an Unauthorized Actor"
+     },
+     {
+      "rank": 18,
+      "cwe": "CWE-863",
+      "name": "Incorrect Authorization"
+     },
+     {
+      "rank": 19,
+      "cwe": "CWE-918",
+      "name": "Server-Side Request Forgery (SSRF)"
+     },
+     {
+      "rank": 20,
+      "cwe": "CWE-119",
+      "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+     },
+     {
+      "rank": 21,
+      "cwe": "CWE-476",
+      "name": "NULL Pointer Dereference"
+     },
+     {
+      "rank": 22,
+      "cwe": "CWE-798",
+      "name": "Use of Hard-coded Credentials"
+     },
+     {
+      "rank": 23,
+      "cwe": "CWE-190",
+      "name": "Integer Overflow or Wraparound"
+     },
+     {
+      "rank": 24,
+      "cwe": "CWE-400",
+      "name": "Uncontrolled Resource Consumption"
+     },
+     {
+      "rank": 25,
+      "cwe": "CWE-306",
+      "name": "Missing Authentication for Critical Function"
+     }
+    ]
+   },
+   "2025": {
+    "source": "https://cwe.mitre.org/top25/archive/2025/2025_cwe_top25.html",
+    "top25": [
+     {
+      "rank": 1,
+      "cwe": "CWE-79",
+      "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+     },
+     {
+      "rank": 2,
+      "cwe": "CWE-89",
+      "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+     },
+     {
+      "rank": 3,
+      "cwe": "CWE-352",
+      "name": "Cross-Site Request Forgery (CSRF)"
+     },
+     {
+      "rank": 4,
+      "cwe": "CWE-862",
+      "name": "Missing Authorization"
+     },
+     {
+      "rank": 5,
+      "cwe": "CWE-787",
+      "name": "Out-of-bounds Write"
+     },
+     {
+      "rank": 6,
+      "cwe": "CWE-22",
+      "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+     },
+     {
+      "rank": 7,
+      "cwe": "CWE-416",
+      "name": "Use After Free"
+     },
+     {
+      "rank": 8,
+      "cwe": "CWE-125",
+      "name": "Out-of-bounds Read"
+     },
+     {
+      "rank": 9,
+      "cwe": "CWE-78",
+      "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+     },
+     {
+      "rank": 10,
+      "cwe": "CWE-94",
+      "name": "Improper Control of Generation of Code ('Code Injection')"
+     },
+     {
+      "rank": 11,
+      "cwe": "CWE-120",
+      "name": "Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')"
+     },
+     {
+      "rank": 12,
+      "cwe": "CWE-434",
+      "name": "Unrestricted Upload of File with Dangerous Type"
+     },
+     {
+      "rank": 13,
+      "cwe": "CWE-476",
+      "name": "NULL Pointer Dereference"
+     },
+     {
+      "rank": 14,
+      "cwe": "CWE-121",
+      "name": "Stack-based Buffer Overflow"
+     },
+     {
+      "rank": 15,
+      "cwe": "CWE-502",
+      "name": "Deserialization of Untrusted Data"
+     },
+     {
+      "rank": 16,
+      "cwe": "CWE-122",
+      "name": "Heap-based Buffer Overflow"
+     },
+     {
+      "rank": 17,
+      "cwe": "CWE-863",
+      "name": "Incorrect Authorization"
+     },
+     {
+      "rank": 18,
+      "cwe": "CWE-20",
+      "name": "Improper Input Validation"
+     },
+     {
+      "rank": 19,
+      "cwe": "CWE-284",
+      "name": "Improper Access Control"
+     },
+     {
+      "rank": 20,
+      "cwe": "CWE-200",
+      "name": "Exposure of Sensitive Information to an Unauthorized Actor"
+     },
+     {
+      "rank": 21,
+      "cwe": "CWE-306",
+      "name": "Missing Authentication for Critical Function"
+     },
+     {
+      "rank": 22,
+      "cwe": "CWE-918",
+      "name": "Server-Side Request Forgery (SSRF)"
+     },
+     {
+      "rank": 23,
+      "cwe": "CWE-77",
+      "name": "Improper Neutralization of Special Elements used in a Command ('Command Injection')"
+     },
+     {
+      "rank": 24,
+      "cwe": "CWE-639",
+      "name": "Authorization Bypass Through User-Controlled Key"
+     },
+     {
+      "rank": 25,
+      "cwe": "CWE-770",
+      "name": "Allocation of Resources Without Limits or Throttling"
+     }
+    ]
+   }
+  }
+ }
+}
