@@ -3,6 +3,7 @@
   python dataset/fetch.py bigvul   --n 120 --out dataset/bigvul.jsonl      # redistributed in this repo (MIT)
   python dataset/fetch.py juliet   --n 80  --out dataset/juliet.jsonl      # redistributed in this repo (CC0)
   python dataset/fetch.py diversevul|draper|codexglue|benchmark --n 200 --out my.jsonl   # NOT redistributed, pull yourself
+  python dataset/fetch.py cybernative --n 400 --out dataset/cybernative.jsonl  # redistributed (Apache-2.0); --n = cap per category
 
 Uses the Hugging Face datasets-server API (no login, rate limited, stdlib only) and, for benchmark, raw GitHub.
 Raise --n for a bigger sample. Sources and licenses: dataset/README.md. Check each license before redistributing."""
@@ -165,16 +166,96 @@ def benchmark(n):
     return out
 
 
-SOURCES = {"bigvul": bigvul, "juliet": juliet, "diversevul": diversevul, "draper": draper, "codexglue": codexglue, "benchmark": benchmark}
+# keyword rules for sources without CWE labels: first match wins; unmatched rows are skipped, never guessed
+RULES = [
+    (r"sql injection|sqli|nosql", "A03", "CWE-89"),
+    (r"command injection|os command|shell injection|shell=true|argument injection", "A03", "CWE-78"),
+    (r"cross.site scripting|\bxss\b", "A03", "CWE-79"),
+    (r"code injection|eval|template injection|ldap injection|xpath|expression language|injection", "A03", "CWE-94"),
+    (r"xml external|xxe|external entit", "A05", "CWE-611"),
+    (r"ssrf|server.side request forgery", "A10", "CWE-918"),
+    (r"deserializ|pickle|unserialize|unsafe.*yaml|objectinputstream", "A08", "CWE-502"),
+    (r"integrity|unsigned|mass assignment|prototype pollution", "A08", "CWE-915"),
+    (r"hard.?coded|credentials? (?:in|stored)|plaintext password|default password", "A07", "CWE-798"),
+    (r"session|authentication|brute.force|password polic|jwt|token (?:valid|expir)|login", "A07", "CWE-287"),
+    (r"path traversal|directory traversal|csrf|cross.site request|open redirect|idor|insecure direct|access control|authorization|privilege|unauthori[sz]ed access|missing permission", "A01", "CWE-862"),
+    (r"encrypt|cryptograph|weak hash|\bmd5\b|sha-?1|random(?:ness| number)|predictable|certificate|\btls\b|\bssl\b|cipher|\bkey (?:management|storage)", "A02", "CWE-327"),
+    (r"logging|log injection|audit|monitor", "A09", "CWE-778"),
+    (r"outdated|vulnerable (?:component|librar|dependenc)|deprecated|third.party (?:librar|packag)|dependency", "A06", "CWE-1104"),
+    (r"misconfig|debug mode|cors|security header|verbose error|default config|exposed (?:admin|endpoint)|permissive", "A05", "CWE-16"),
+    (r"race condition|toctou|business logic|rate limit|denial of service|resource exhaustion|unbounded|infinite|information (?:leak|disclos|exposure)|error message|stack trace|sensitive (?:data|information)", "A04", "CWE-840"),
+    (r"buffer overflow|buffer overrun|out.of.bounds|use.after.free|null pointer|integer overflow|format string|memory (?:leak|management|corruption)|dangling|double free|stack overflow|heap", "N/A", ""),
+]
+
+
+def classify(text):
+    t = text.lower()
+    for pat, o, cwe in RULES:
+        if re.search(pat, t):
+            return o, cwe
+    return None
+
+
+def strip_fence(c):
+    c = c.strip()
+    m = re.match(r"^```[\w+#.-]*\n(.*?)\n?```\s*$", c, re.S)
+    return m.group(1) if m else c
+
+
+def cybernative(n, maxlen=1800):
+    """CyberNative/Code_Vulnerability_Security_DPO (Apache-2.0): LLM-generated vulnerable ('rejected') vs secure ('chosen') code."""
+    raw = get("https://huggingface.co/datasets/CyberNative/Code_Vulnerability_Security_DPO/resolve/main/secure_programming_dpo.json")
+    rows = [json.loads(l) for l in raw.splitlines() if l.strip()]
+    seen, out = set(), []
+    for r in rows:
+        c = classify(r["vulnerability"])
+        v, f = strip_fence(r["rejected"]), strip_fence(r["chosen"])
+        if not c or not v or not f or v == f or len(v) > maxlen or len(f) > maxlen or (v, f) in seen:
+            continue
+        seen.add((v, f))
+        out.append((c, r, v, f))
+    per = {}
+    keep = []
+    for c, r, v, f in out:
+        if per.get(c[0], 0) < (n // 3 if c[0] == "N/A" else n):
+            per[c[0]] = per.get(c[0], 0) + 1
+            keep.append((c, r, v, f))
+    res = []
+    for i, ((o, cwe), r, v, f) in enumerate(keep, 1):
+        x = rec("C", i, "", r["lang"], r["vulnerability"], v, f,
+                "https://huggingface.co/datasets/CyberNative/Code_Vulnerability_Security_DPO", "Apache-2.0",
+                "LLM-generated code; OWASP label from keyword rules on the description (heuristic), no CWE assigned")
+        if o == "N/A":
+            x["owasp"] = owasp_for("CWE-0")
+        else:
+            x["owasp"] = f"{o}:2021 - {NAMES[o]}"
+        res.append(x)
+    return res
+
+
+SOURCES = {"cybernative": cybernative, "bigvul": bigvul, "juliet": juliet, "diversevul": diversevul, "draper": draper, "codexglue": codexglue, "benchmark": benchmark}
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("source", choices=SOURCES)
     p.add_argument("--n", type=int, default=100)
     p.add_argument("--out", required=True)
+    p.add_argument("--split-kb", type=int, default=200)
     a = p.parse_args()
     rows = SOURCES[a.source](a.n)
-    with open(a.out, "w", encoding="utf-8") as f:
-        for r in rows:
-            f.write(json.dumps(r, ensure_ascii=False) + "\n")
-    print(f"{a.source}: wrote {len(rows)} records to {a.out}", file=sys.stderr)
+    # split into parts of at most --split-kb so files stay easy to view and upload
+    parts, cur, size = [], [], 0
+    for r in rows:
+        line = json.dumps(r, ensure_ascii=False) + "\n"
+        if cur and size + len(line.encode()) > a.split_kb * 1000:
+            parts.append(cur)
+            cur, size = [], 0
+        cur.append(line)
+        size += len(line.encode())
+    parts.append(cur)
+    stem = a.out[:-6] if a.out.endswith(".jsonl") else a.out
+    names = [a.out] if len(parts) == 1 else [f"{stem}_{k}.jsonl" for k in range(1, len(parts) + 1)]
+    for name, lines in zip(names, parts):
+        with open(name, "w", encoding="utf-8") as f:
+            f.writelines(lines)
+    print(f"{a.source}: wrote {len(rows)} records to {', '.join(names)}", file=sys.stderr)
