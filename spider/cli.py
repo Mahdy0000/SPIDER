@@ -10,8 +10,8 @@ def main(argv=None):
     p = argparse.ArgumentParser(prog="spider",
                                 description="S.P.I.D.E.R phase 1: local-LLM SAST. Reviews YOUR OWN code for security flaws.")
     p.add_argument("target", help="file or folder to review")
-    p.add_argument("--model", default=os.environ.get("SPIDER_MODEL", "qwen2.5-coder:7b"),
-                   help="Ollama model (default: qwen2.5-coder:7b, env SPIDER_MODEL)")
+    p.add_argument("--model", default=os.environ.get("SPIDER_MODEL", "dolphinlabs/llama3.2-3b-uncensored"),
+                   help="Ollama model (default: dolphinlabs/llama3.2-3b-uncensored, env SPIDER_MODEL)")
     p.add_argument("--host", default=os.environ.get("OLLAMA_HOST", "http://localhost:11434"))
     p.add_argument("--format", choices=["text", "json", "markdown"], default="text")
     p.add_argument("-o", "--output", help="write report to this file")
