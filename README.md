@@ -76,7 +76,7 @@ The unit tests use a fake Ollama server (no model needed). They check parsing, O
 
 ## Dataset
 
-`dataset/` holds 16 labeled vulnerable/fixed pairs across all 10 OWASP categories, prepared for retrieval later (not used by the tool yet). See `dataset/README.md`.
+`dataset/` holds 194 labeled vulnerable/fixed pairs (105 original, 89 from OWASP Juice Shop, MIT) covering all 10 OWASP categories, prepared for retrieval later (not used by the tool yet). Counts, format and licenses: `dataset/README.md`.
 
 ## Roadmap
 
