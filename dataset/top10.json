@@ -1,0 +1,293 @@
+{
+  "note": "OWASP publishes the Top 10 every few years, not every year. The recent lists are 2017, 2021 and 2025. There is no 2022, 2023 or 2024 list. CWE lists are the notable or typical ones, not the full mapping. Examples are minimal Python snippets for illustration.",
+  "lists": [
+    {
+      "list": "OWASP Top 10:2025",
+      "status": "Official final release. owasp.org/Top10/2025 and the OWASP/Top10 GitHub README list it as released (Final) and mark 2021 as superseded. It went through alpha and release-candidate stages first.",
+      "source": "https://owasp.org/Top10/2025/",
+      "categories": [
+        {
+          "id": "A01:2025",
+          "name": "Broken Access Control",
+          "description": "Still #1. Users act outside their permissions. SSRF was folded into this category in 2025.",
+          "typical_cwes": [
+            "CWE-200",
+            "CWE-201",
+            "CWE-352",
+            "CWE-918"
+          ],
+          "vulnerable_example": "@app.get('/invoice/<int:id>')\ndef invoice(id):\n    return db.invoice(id)",
+          "fixed_example": "@app.get('/invoice/<int:id>')\ndef invoice(id):\n    inv = db.invoice(id)\n    if inv.owner_id != current_user.id:\n        abort(403)\n    return inv"
+        },
+        {
+          "id": "A02:2025",
+          "name": "Security Misconfiguration",
+          "description": "Up from #5. Systems, apps or cloud services set up insecurely: debug on, default credentials, open storage, risky XML parser settings.",
+          "typical_cwes": [
+            "CWE-16",
+            "CWE-611"
+          ],
+          "vulnerable_example": "app.config['DEBUG'] = True\nADMIN_PASSWORD = 'admin'",
+          "fixed_example": "app.config['DEBUG'] = False\nADMIN_PASSWORD = os.environ['ADMIN_PASSWORD']"
+        },
+        {
+          "id": "A03:2025",
+          "name": "Software Supply Chain Failures",
+          "description": "New name and wider scope than 2021's Vulnerable and Outdated Components: compromised or vulnerable dependencies, build systems and distribution.",
+          "typical_cwes": [
+            "CWE-477",
+            "CWE-1104",
+            "CWE-1329",
+            "CWE-1395"
+          ],
+          "vulnerable_example": "# requirements.txt\nlog4j-core==2.14.1",
+          "fixed_example": "# requirements: pin a patched version and scan dependencies in CI\nlog4j-core==2.17.1"
+        },
+        {
+          "id": "A04:2025",
+          "name": "Cryptographic Failures",
+          "description": "Down from #2. Missing or weak encryption, bad key handling, weak randomness.",
+          "typical_cwes": [
+            "CWE-327",
+            "CWE-331",
+            "CWE-338",
+            "CWE-1241"
+          ],
+          "vulnerable_example": "import hashlib\nh = hashlib.md5(password.encode()).hexdigest()",
+          "fixed_example": "import bcrypt\nh = bcrypt.hashpw(password.encode(), bcrypt.gensalt())"
+        },
+        {
+          "id": "A05:2025",
+          "name": "Injection",
+          "description": "Down from #3. Untrusted input reaches an interpreter, from cross-site scripting to SQL injection.",
+          "typical_cwes": [
+            "CWE-79",
+            "CWE-89",
+            "CWE-78",
+            "CWE-94"
+          ],
+          "vulnerable_example": "cur.execute(\"SELECT * FROM users WHERE name = '\" + name + \"'\")",
+          "fixed_example": "cur.execute(\"SELECT * FROM users WHERE name = %s\", (name,))"
+        },
+        {
+          "id": "A06:2025",
+          "name": "Insecure Design",
+          "description": "Down from #4. Design and architecture flaws, including business logic, missing threat modeling and secure design patterns.",
+          "typical_cwes": [
+            "CWE-256",
+            "CWE-269",
+            "CWE-434",
+            "CWE-501",
+            "CWE-522"
+          ],
+          "vulnerable_example": "def reset_password(email):\n    # security question is the only check, unlimited tries\n    if answer == user.answer:\n        set_password(user)",
+          "fixed_example": "def reset_password(email, token):\n    # single-use emailed token, rate limited, expires in 15 min\n    if rate_limit_ok(email) and verify_token(email, token):\n        set_password(user)"
+        },
+        {
+          "id": "A07:2025",
+          "name": "Authentication Failures",
+          "description": "Renamed from Identification and Authentication Failures. Weak login, credential or session handling.",
+          "typical_cwes": [
+            "CWE-259",
+            "CWE-287",
+            "CWE-297",
+            "CWE-384",
+            "CWE-798"
+          ],
+          "vulnerable_example": "if user and user.password == request.form['password']:\n    login(user)",
+          "fixed_example": "if user and bcrypt.checkpw(request.form['password'].encode(), user.pw_hash):\n    session.clear()\n    login(user)"
+        },
+        {
+          "id": "A08:2025",
+          "name": "Software or Data Integrity Failures",
+          "description": "Renamed (and to 'or'). Missing integrity checks on code, updates and data, at a lower level than supply chain failures.",
+          "typical_cwes": [
+            "CWE-345",
+            "CWE-502",
+            "CWE-829",
+            "CWE-915"
+          ],
+          "vulnerable_example": "import pickle\nobj = pickle.loads(request.data)",
+          "fixed_example": "import json\nobj = json.loads(request.data)  # data only, never executable objects"
+        },
+        {
+          "id": "A09:2025",
+          "name": "Security Logging & Alerting Failures",
+          "description": "Renamed from Logging and Monitoring. Logging without alerting is of little use for catching incidents.",
+          "typical_cwes": [
+            "CWE-117",
+            "CWE-221",
+            "CWE-223",
+            "CWE-532",
+            "CWE-778"
+          ],
+          "vulnerable_example": "def login(u, p):\n    if not check(u, p):\n        return False",
+          "fixed_example": "def login(u, p):\n    if not check(u, p):\n        log.warning('failed login user=%s ip=%s', u, ip)  # alert on bursts\n        return False"
+        },
+        {
+          "id": "A10:2025",
+          "name": "Mishandling of Exceptional Conditions",
+          "description": "New in 2025. Poor error handling, logical errors and failing open when something unusual happens.",
+          "typical_cwes": [
+            "CWE-209",
+            "CWE-234",
+            "CWE-274",
+            "CWE-476",
+            "CWE-636"
+          ],
+          "vulnerable_example": "try:\n    ok = verify_token(t)\nexcept Exception:\n    ok = True  # fails open",
+          "fixed_example": "try:\n    ok = verify_token(t)\nexcept Exception:\n    log.exception('token check failed')\n    ok = False  # fail closed"
+        }
+      ]
+    },
+    {
+      "list": "OWASP Top 10:2021",
+      "status": "Official release, now marked superseded by the 2025 list on the OWASP project page",
+      "source": "https://owasp.org/Top10/2021/",
+      "categories": [
+        {
+          "id": "A01:2021",
+          "name": "Broken Access Control",
+          "description": "Users can act outside their intended permissions: reading other users' data, changing records, or reaching admin functions.",
+          "typical_cwes": [
+            "CWE-22",
+            "CWE-200",
+            "CWE-284",
+            "CWE-352",
+            "CWE-639",
+            "CWE-862",
+            "CWE-863"
+          ],
+          "vulnerable_example": "@app.get('/invoice/<int:id>')\ndef invoice(id):\n    return db.invoice(id)",
+          "fixed_example": "@app.get('/invoice/<int:id>')\ndef invoice(id):\n    inv = db.invoice(id)\n    if inv.owner_id != current_user.id:\n        abort(403)\n    return inv"
+        },
+        {
+          "id": "A02:2021",
+          "name": "Cryptographic Failures",
+          "description": "Sensitive data is not protected in transit or at rest, or weak or misused cryptography is used.",
+          "typical_cwes": [
+            "CWE-259",
+            "CWE-311",
+            "CWE-319",
+            "CWE-327",
+            "CWE-328",
+            "CWE-330",
+            "CWE-331"
+          ],
+          "vulnerable_example": "import hashlib\nh = hashlib.md5(password.encode()).hexdigest()",
+          "fixed_example": "import bcrypt\nh = bcrypt.hashpw(password.encode(), bcrypt.gensalt())"
+        },
+        {
+          "id": "A03:2021",
+          "name": "Injection",
+          "description": "Untrusted input is sent to an interpreter (SQL, OS shell, LDAP, browser) and runs as commands. Includes cross-site scripting.",
+          "typical_cwes": [
+            "CWE-20",
+            "CWE-77",
+            "CWE-78",
+            "CWE-79",
+            "CWE-89",
+            "CWE-94",
+            "CWE-917"
+          ],
+          "vulnerable_example": "cur.execute(\"SELECT * FROM users WHERE name = '\" + name + \"'\")",
+          "fixed_example": "cur.execute(\"SELECT * FROM users WHERE name = %s\", (name,))"
+        },
+        {
+          "id": "A04:2021",
+          "name": "Insecure Design",
+          "description": "Missing or weak security controls in the design itself, such as no threat modeling or unsafe business flows. Not fixable by perfect code alone.",
+          "typical_cwes": [
+            "CWE-209",
+            "CWE-256",
+            "CWE-501",
+            "CWE-522",
+            "CWE-602",
+            "CWE-840"
+          ],
+          "vulnerable_example": "def reset_password(email):\n    # security question is the only check, unlimited tries\n    if answer == user.answer:\n        set_password(user)",
+          "fixed_example": "def reset_password(email, token):\n    # single-use emailed token, rate limited, expires in 15 min\n    if rate_limit_ok(email) and verify_token(email, token):\n        set_password(user)"
+        },
+        {
+          "id": "A05:2021",
+          "name": "Security Misconfiguration",
+          "description": "Insecure defaults, unneeded features, verbose errors, missing hardening, or misconfigured cloud services.",
+          "typical_cwes": [
+            "CWE-2",
+            "CWE-16",
+            "CWE-611",
+            "CWE-1004"
+          ],
+          "vulnerable_example": "app.config['DEBUG'] = True\nADMIN_PASSWORD = 'admin'",
+          "fixed_example": "app.config['DEBUG'] = False\nADMIN_PASSWORD = os.environ['ADMIN_PASSWORD']"
+        },
+        {
+          "id": "A06:2021",
+          "name": "Vulnerable and Outdated Components",
+          "description": "Using libraries, frameworks or other components with known vulnerabilities or that are no longer supported.",
+          "typical_cwes": [
+            "CWE-937",
+            "CWE-1035",
+            "CWE-1104"
+          ],
+          "vulnerable_example": "# requirements.txt\nlog4j-core==2.14.1",
+          "fixed_example": "# requirements: pin a patched version and scan dependencies in CI\nlog4j-core==2.17.1"
+        },
+        {
+          "id": "A07:2021",
+          "name": "Identification and Authentication Failures",
+          "description": "Weak login, credential, or session handling lets attackers assume other users' identities.",
+          "typical_cwes": [
+            "CWE-255",
+            "CWE-287",
+            "CWE-297",
+            "CWE-307",
+            "CWE-384",
+            "CWE-798"
+          ],
+          "vulnerable_example": "if user and user.password == request.form['password']:\n    login(user)",
+          "fixed_example": "if user and bcrypt.checkpw(request.form['password'].encode(), user.pw_hash):\n    session.clear()\n    login(user)"
+        },
+        {
+          "id": "A08:2021",
+          "name": "Software and Data Integrity Failures",
+          "description": "Code and data are trusted without integrity checks: unsafe deserialization, unsigned updates, insecure CI/CD pipelines.",
+          "typical_cwes": [
+            "CWE-345",
+            "CWE-353",
+            "CWE-426",
+            "CWE-494",
+            "CWE-502",
+            "CWE-829",
+            "CWE-915"
+          ],
+          "vulnerable_example": "import pickle\nobj = pickle.loads(request.data)",
+          "fixed_example": "import json\nobj = json.loads(request.data)  # data only, never executable objects"
+        },
+        {
+          "id": "A09:2021",
+          "name": "Security Logging and Monitoring Failures",
+          "description": "Security events are not logged, monitored or alerted on, so attacks go unnoticed.",
+          "typical_cwes": [
+            "CWE-117",
+            "CWE-223",
+            "CWE-532",
+            "CWE-778"
+          ],
+          "vulnerable_example": "def login(u, p):\n    if not check(u, p):\n        return False",
+          "fixed_example": "def login(u, p):\n    if not check(u, p):\n        log.warning('failed login user=%s ip=%s', u, ip)  # alert on bursts\n        return False"
+        },
+        {
+          "id": "A10:2021",
+          "name": "Server-Side Request Forgery (SSRF)",
+          "description": "The server fetches a URL supplied by the user, letting attackers reach internal services or cloud metadata.",
+          "typical_cwes": [
+            "CWE-918"
+          ],
+          "vulnerable_example": "url = request.args['url']\nreturn requests.get(url).text",
+          "fixed_example": "host = urlparse(url).hostname\nif host not in ALLOWED_HOSTS:\n    abort(400)\nreturn requests.get(url, timeout=5).text"
+        }
+      ]
+    }
+  ]
+}
