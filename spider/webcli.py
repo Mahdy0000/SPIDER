@@ -25,6 +25,8 @@ def build_parser():
     p.add_argument("--model", default=os.environ.get("SPIDER_MODEL", "dolphinlabs/llama3.2-3b-uncensored"))
     p.add_argument("--host", default=os.environ.get("OLLAMA_HOST", "http://localhost:11434"))
     p.add_argument("--timeout", type=int, default=300)
+    p.add_argument("--verify", action="store_true", help="re-check each finding on a fresh request before reporting")
+    p.add_argument("--hide-false-positives", action="store_true", help="with --verify: drop findings that did not reproduce")
     p.add_argument("--format", choices=["text", "json", "markdown"], default="text")
     p.add_argument("-o", "--output")
     p.add_argument("--fail-on", choices=scanner.SEVERITIES)
@@ -62,6 +64,10 @@ def main(argv=None):
         if a.agent:
             extra, _ = agent.run(client, a.url, a.host, a.model, crawled, a.agent_steps, a.timeout)
             findings += extra
+        if a.verify:
+            from . import verify
+            findings = verify.verify_all(findings, client=client, host=a.host, model=a.model, timeout=a.timeout,
+                                         hide_false_positives=a.hide_false_positives)
     except OllamaError as e:
         print(f"error: {e}", file=sys.stderr)
         return 1

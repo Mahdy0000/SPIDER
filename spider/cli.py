@@ -27,6 +27,8 @@ def code_main(argv):
     p.add_argument("--timeout", type=int, default=300, help="per-request timeout seconds")
     p.add_argument("--fail-on", choices=scanner.SEVERITIES, help="exit 2 if a finding at/above this severity exists")
     p.add_argument("--patch", metavar="FILE", help="also write a unified diff of suggested fixes (never edits your files)")
+    p.add_argument("--verify", action="store_true", help="second-opinion pass on each finding (extra model call per finding)")
+    p.add_argument("--hide-false-positives", action="store_true", help="with --verify: drop findings the second pass rejects")
     p.add_argument("--no-rag", action="store_true", help="disable the local CWE/OWASP knowledge hints")
     p.add_argument("--version", action="version", version=__version__)
     a = p.parse_args(argv)
@@ -51,6 +53,14 @@ def code_main(argv):
         print(f"error: {e}", file=sys.stderr)
         return 1
 
+    if a.verify:
+        from . import verify
+        try:
+            findings = verify.verify_all(findings, host=a.host, model=a.model, timeout=a.timeout,
+                                         hide_false_positives=a.hide_false_positives)
+        except OllamaError as e:
+            print(f"error: {e}", file=sys.stderr)
+            return 1
     findings = scanner.sort_findings(findings)
     meta = {"model": a.model, "files": len(files), "tool": "spider", "version": __version__}
     render = {"text": report.to_text, "json": report.to_json, "markdown": report.to_markdown}[a.format]

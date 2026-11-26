@@ -9,6 +9,11 @@ def _loc(f):
     return f"{f['file']}:{f['line']}" + (f"-{f['end_line']}" if f["end_line"] != f["line"] else "")
 
 
+def _verif_md(f):
+    v = f.get("verification")
+    return [f"- Verification: {v['status']} ({v['method']})" + (f": {v['note']}" if v["note"] else "")] if v else []
+
+
 def to_json(findings, meta):
     return json.dumps({"meta": meta, "findings": findings}, indent=2)
 
@@ -25,7 +30,7 @@ def to_markdown(findings, meta):
                 f"- Location: `{loc}`", f"- OWASP: {f['owasp']}"]
         if f["cwe"]:
             out.append(f"- CWE: {f['cwe']}")
-        out += [f"- Confidence: {f['confidence']}", "", f["description"], "", f"**Fix:** {f['fix']}"]
+        out += [f"- Confidence: {f['confidence']}"] + _verif_md(f) + ["", f["description"], "", f"**Fix:** {f['fix']}"]
         if f["fixed_code"]:
             out += ["", "```", f["fixed_code"], "```"]
         out.append("")
@@ -41,6 +46,8 @@ def to_text(findings, meta):
         lines.append(f"[{f['severity'].upper():8}] {_loc(f)}  {f['title']}")
         lines.append(f"           {f['owasp']}" + (f" | {f['cwe']}" if f["cwe"] else ""))
         lines.append(f"           {f['description']}")
+        if f.get("verification"):
+            lines.append(f"           Verification: {f['verification']['status']} ({f['verification']['method']})")
         lines.append(f"           Fix: {f['fix']}")
         lines.append("")
     lines.append(f"{len(findings)} finding(s) in {meta['files']} file(s), model {meta['model']}.")
