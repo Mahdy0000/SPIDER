@@ -5,7 +5,7 @@ import threading
 import unittest
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from spider import cli, scanner
+from spider import cli, context, knowledge, patch, scanner
 
 FIX = os.path.join(os.path.dirname(__file__), "fixtures", "vulnerable_app.py")
 CANNED = {"findings": [
@@ -56,6 +56,36 @@ class T(unittest.TestCase):
 
     def test_unreachable(self):
         self.assertEqual(cli.main([FIX, "--host", "http://127.0.0.1:1"]), 1)
+
+    def test_rag_retrieves_relevant(self):
+        ids = [e["id"] for e in knowledge.retrieve("cur.execute(\"SELECT * FROM t WHERE a=\" + x)\nhashlib.md5(p)")]
+        self.assertIn("CWE-89", ids)
+        self.assertIn("CWE-327", ids)
+
+    def test_outline(self):
+        names, imports = context.outline(FIX)
+        self.assertIn("get_user", names)
+        self.assertIn("hashlib", imports)
+
+    def test_patch_diff(self):
+        fs = [scanner.clean(i, FIX, 20) for i in CANNED["findings"][:1]]
+        d = patch.build_patch(fs)
+        self.assertIn("-    cur.execute(", d)
+        self.assertNotIn("a//", d)
+        self.assertIn("+    cur.execute('SELECT * FROM users WHERE name = ?', (name,))", d)
+
+    def test_cli_patch_and_no_rag(self):
+        rc = cli.main([FIX, "--host", self.host, "--patch", "/tmp/_p.diff", "--no-rag", "-o", "/tmp/_r2.txt"])
+        self.assertEqual(rc, 0)
+        self.assertTrue(open("/tmp/_p.diff").read().startswith("---"))
+
+    def test_dataset_schema(self):
+        path = os.path.join(os.path.dirname(__file__), "..", "dataset", "samples.jsonl")
+        rows = [json.loads(l) for l in open(path)]
+        self.assertGreaterEqual(len({r["owasp"][:3] for r in rows}), 10)
+        for r in rows:
+            for k in ("id", "owasp", "cwe", "language", "description", "vulnerable_code", "fixed_code", "source", "license"):
+                self.assertTrue(r[k], k)
 
 
 if __name__ == "__main__":
