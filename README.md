@@ -11,7 +11,7 @@ A privacy-first AI security agent that runs on local LLMs (Ollama). The goal: fi
 | Phase | What | Status |
 |---|---|---|
 | II | Static code analysis (SAST) with a local LLM | **Works now (MVP, v0.1)** |
-| IV | Remediation reporting (OWASP-mapped findings + fix per finding) | **Works**: text/JSON/Markdown reports, plus `--patch` unified diff |
+| IV | Remediation reporting (OWASP-mapped findings + fix per finding) | **Works (v0.5)**: text/JSON/Markdown/HTML/SARIF reports with summary and fix-first list, plus `--patch` unified diff |
 | - | Local RAG hints (bundled CWE/OWASP notes) | **Works** (keyword retrieval, 14 entries) |
 | I | Web application review (scope-enforced crawler, passive checks, LLM agent loop) | **Works (v0.3)**, see "Web review" |
 | III | Finding verification to cut false positives (`--verify`) | **Works (v0.4)**, re-check only, no exploit/PoC generation |
@@ -28,7 +28,7 @@ Phases follow the project concept doc; SAST is built first.
 - OWASP Top 10 (2021) category (+ CWE when the model gives one)
 - description and a suggested fix (with a fixed code snippet when available)
 
-Output: `text` (default), `json`, `markdown`. `--fail-on <severity>` exits 2 for CI use.
+Output: `text` (default), `json`, `markdown`, `html` (self-contained, no scripts), `sarif` (SARIF 2.1.0 for GitHub code scanning and IDEs). `--fail-on <severity>` exits 2 for CI use.
 
 ## Web review (v0.3)
 
@@ -87,7 +87,8 @@ The unit tests use a fake Ollama server and a local test web server on 127.0.0.1
 
 ## Tested so far
 
-- Unit tests (fake Ollama server, local test web server): 30 pass. SAST: parsing, OWASP mapping, RAG retrieval, outline, patch diff, CLI flags. Web: allowlist (loopback, named hosts, too-broad entries, redirect to an out-of-scope host, request budget), crawler staying in scope, each check on a deliberately weak local server, agent grounding, CLI exit codes. Verification: reproduced / not reproduced, hiding, model verdict parsing, garbage output, CLI flags.
+- Unit tests (fake Ollama server, local test web server): 36 pass. SAST: parsing, OWASP mapping, RAG retrieval, outline, patch diff, CLI flags. Web: allowlist (loopback, named hosts, too-broad entries, redirect to an out-of-scope host, request budget), crawler staying in scope, each check on a deliberately weak local server, agent grounding, CLI exit codes. Verification: reproduced / not reproduced, hiding, model verdict parsing, garbage output, CLI flags. Reports: summary and fix-first ranking, SARIF structure, HTML escaping, all formats render.
+- Smoke test: `spider web` with `--verify` against a local `python -m http.server` produced a Markdown and a SARIF report, and an `example.com` target was refused with exit 3.
 - The web checks, agent loop and `--verify` have not been run against DVWA/Juice Shop or a real model yet, so how well the model second opinion filters false positives is unmeasured.
 - v0.2 features (RAG, outline, `--patch`, benchmark) were only tested with the fake server, not yet with a real model. `benchmark/run.py` has not been run against a real model.
 - Real run: CLI against a real Ollama 0.40.18 with `qwen2.5-coder:0.5b` on a 1-CPU Linux box. It ran end to end and returned OWASP-mapped findings, but with that tiny model the results were low quality (generic, some wrong lines). Not yet tested with the default model (`dolphinlabs/llama3.2-3b-uncensored`) or any 7B+ model.
@@ -103,7 +104,7 @@ The unit tests use a fake Ollama server and a local test web server on 127.0.0.1
 3. RAG over CWE/OWASP data: **done (v0.2)**, simple keyword retrieval, no embeddings yet.
 4. Web review: crawler, passive checks and agent loop with an enforced allowlist: **done (v0.3)**. Tested against a local test server and a fake model only.
 5. Verification stage: **done (v0.4)** as re-check plus model second opinion; no PoC execution by design. Tested with a local test server and a fake model only.
-6. Report improvements: planned (v0.5).
+6. Report improvements: **done (v0.5)**: summary by severity/OWASP/verification, a fix-first list (rejected findings are never recommended), HTML and SARIF output.
 
 ## License
 
