@@ -15,6 +15,8 @@ Shards carry the OWASP Top 10 **2021** label (`owasp`) and the source's CWE. `py
 
 Mappings live in `spider/data/taxonomy.json`, built from the official lists: OWASP 2025 per-category CWE lists (github.com/OWASP/Top10, 2025/docs/en) and the five CWE Top 25 editions at cwe.mitre.org/top25/archive/2021 ... 2025. The 2025 distribution of the 1542 records: A01 162, A02 17, A03 8, A04 116, A05 471, A06 200, A07 50, A08 249, A09 21, A10 10, N/A 238. The 2025 labels of rows without a CWE are crosswalk guesses, not new evidence. `dataset/top10.md` describes both OWASP lists.
 
+Also in `taxonomy.json`: the OWASP API Security Top 10 (2023) and OWASP Top 10 for LLM Applications (2025), 10 categories each from the official pages (owasp.org/API-Security/editions/2023, genai.owasp.org/llm-top-10). They are NOT applied to the dataset rows: the rows are code samples labeled by CWE, the official pages list no CWEs for these categories (only API9 names CWE-1059), and inventing a mapping would be guessing. They are retrieval references in `spider rag`.
+
 Checked and not added: MITRE's CWE Top 25 has no 2026 edition yet, and OWASP has no 2022 to 2024 or 2026 Top 10. CAPEC (attack patterns) and the CWE Top 10 KEV list were not added: they describe attacker techniques or exploited-in-the-wild ranking, not code weaknesses a reviewer fixes, and the dataset has no source rows labeled with them.
 
 ## Contents: 1542 samples in this repo
@@ -83,7 +85,7 @@ Regenerate: `build_originals.py` (originals), `build_juiceshop.py` (needs a Juic
 
 ## Limits
 
-- Hundreds of samples, not a training-scale corpus. Fine for retrieval and as a test seed.
+- Hundreds of samples, not a training-scale corpus. Fine for retrieval (`spider rag`) and as a test seed.
 - Labels are the sources' own plus our CWE-to-OWASP mapping; not independently audited. Big-Vul labels come from commits and are known to be noisy; Juliet is synthetic and idealised.
 - Juice Shop `vulnerable_code` is the original with a small non-fix edit (a deliberately wrong candidate fix), see the `notes` field.
 - Mostly C/C++ for the large sets; web languages are covered by the original and Juice Shop samples.
