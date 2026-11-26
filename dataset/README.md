@@ -4,6 +4,19 @@ Labeled vulnerable code samples, collected so a retrieval step (RAG) can use the
 
 **One file for training:** run `python dataset/merge.py` to write `dataset/all.jsonl` (every record, with source, license, OWASP and CWE fields). The shards below stay under 200 KB each because the repo is pushed through the GitHub web editor.
 
+## Classification schemes
+
+Shards carry the OWASP Top 10 **2021** label (`owasp`) and the source's CWE. `python dataset/merge.py` adds, in `dataset/all.jsonl`:
+
+| field | meaning |
+|---|---|
+| owasp_2025 | OWASP Top 10:2025 label (official final release). Taken from the CWE when the 2025 category lists contain it (145 records), otherwise from the official 2021 to 2025 category crosswalk (1397 records, `owasp_2025_basis` says which) |
+| cwe_top25 | years 2021 to 2025 in which the record's CWE is in the MITRE CWE Top 25, `[]` if never (117 records are in at least one edition) |
+
+Mappings live in `spider/data/taxonomy.json`, built from the official lists: OWASP 2025 per-category CWE lists (github.com/OWASP/Top10, 2025/docs/en) and the five CWE Top 25 editions at cwe.mitre.org/top25/archive/2021 ... 2025. The 2025 distribution of the 1542 records: A01 162, A02 17, A03 8, A04 116, A05 471, A06 200, A07 50, A08 249, A09 21, A10 10, N/A 238. The 2025 labels of rows without a CWE are crosswalk guesses, not new evidence. `dataset/top10.md` describes both OWASP lists.
+
+Checked and not added: MITRE's CWE Top 25 has no 2026 edition yet, and OWASP has no 2022 to 2024 or 2026 Top 10. CAPEC (attack patterns) and the CWE Top 10 KEV list were not added: they describe attacker techniques or exploited-in-the-wild ranking, not code weaknesses a reviewer fixes, and the dataset has no source rows labeled with them.
+
 ## Contents: 1542 samples in this repo
 
 | Category | original | Juice Shop | Big-Vul | Juliet | CyberNative | total |
