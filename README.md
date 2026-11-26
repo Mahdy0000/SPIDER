@@ -6,6 +6,35 @@ A privacy-first AI security agent that runs on local LLMs (Ollama). The goal: fi
 
 **Scope: defensive only.** Use it on code and systems you own or are authorized to test.
 
+## Install (one command)
+
+**Windows 11 (PowerShell), the way to install:**
+
+```powershell
+irm https://raw.githubusercontent.com/Mahdy0000/SPIDER/main/install.ps1 | iex
+```
+
+**WSL2 / Linux / macOS:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Mahdy0000/SPIDER/main/install.sh | bash
+```
+
+What it does, with live output on screen: installs Python, Git and Ollama if missing (winget on Windows), installs SPIDER into its own venv (`~/.spider/venv`, no third-party packages), then runs `spider start`, which:
+
+1. starts Ollama if it is not running;
+2. pulls the default model `dolphinlabs/llama3.2-3b-uncensored` (one time, about 2 GB) and the embedding model `nomic-embed-text` (about 274 MB), skipping what is already installed;
+3. builds the local RAG index with a progress counter (the 1542 dataset samples and the OWASP/CWE references; downloads about 3 MB of dataset files if you did not clone the repo);
+4. it prints your hardware and **asks** whether to start local fine-tuning now (default no unless the GPU is clearly big enough; see "Local training"). Skip the question with `--no-train`.
+5. opens an interactive prompt: paste a folder/file path, or the URL of an app you own. It runs the review, saves a Markdown report in `./spider-reports/` and prints the exact path, then waits for the next target. `exit` quits, Ctrl+C asks before quitting. Web targets other than localhost ask you to confirm you own them first.
+
+Later runs: `spider start` (add `--skip-setup` to go straight to the prompt, `--lexical` to skip the embedding model). If you already cloned the repo: `pip install -e . && spider start`.
+
+
+Training needs Linux with CUDA: on your laptop that means **WSL2**. In PowerShell the one command installs and runs reviews, and `spider start` will tell you plainly that training must run in WSL2. For everything including training, run the second command (WSL2) once; see "Local training".
+
+Honest status: `spider start`'s logic (argument parsing, setup checks, target parsing, the loop, Ctrl+C and bad-input handling) is unit-tested, and setup plus the loop were run on Linux against a real Ollama (embedding model pulled, 1632-document index built, a failing review did not end the session). **Not run:** `install.ps1` on Windows (no Windows machine here), `install.sh` end to end, and a full review with the default 3B model through the loop. If the installer fails on your machine, the manual steps under "Try it" still work.
+
 ## Status
 
 | Phase | What | Status |
@@ -13,6 +42,7 @@ A privacy-first AI security agent that runs on local LLMs (Ollama). The goal: fi
 | II | Static code analysis (SAST) with a local LLM | **Works now (MVP, v0.1)** |
 | IV | Remediation reporting (OWASP-mapped findings + fix per finding) | **Works (v0.5)**: text/JSON/Markdown/HTML/SARIF reports with summary and fix-first list, plus `--patch` unified diff |
 | - | Local RAG hints (bundled CWE/OWASP notes) | **Works** (keyword retrieval, 14 entries) |
+| - | Local RAG engine over the dataset + OWASP/CWE references (`spider rag`, hybrid BM25 + local embeddings) | **Works**, see "Local RAG" |
 | I | Web application review (scope-enforced crawler, passive checks, LLM agent loop) | **Works (v0.3)**, see "Web review" |
 | III | Finding verification to cut false positives (`--verify`) | **Works (v0.4)**, re-check only, no exploit/PoC generation |
 | - | RAG knowledge base of vulnerability data, tool calling, ReAct loop | Planned |
@@ -95,7 +125,42 @@ The unit tests use a fake Ollama server and a local test web server on 127.0.0.1
 
 ## Dataset
 
-`dataset/` holds 1542 labeled samples (105 original, 89 OWASP Juice Shop, 100 Big-Vul, 60 NIST Juliet, 1188 CyberNative with heuristic labels; `python dataset/merge.py` writes them all into one `dataset/all.jsonl`) with per-source licenses, plus a script to pull more (OWASP Benchmark, CodeXGLUE/Devign, DiverseVul, Draper). Used to fine-tune the reviewer model (see "Fine-tuning"); not used for retrieval yet. Counts, format, licenses: `dataset/README.md`. Findings also get an OWASP Top 10:2025 label and CWE Top 25 years (`spider/data/taxonomy.json`; `merge.py` adds them to the dataset).
+`dataset/` holds 1542 labeled samples (105 original, 89 OWASP Juice Shop, 100 Big-Vul, 60 NIST Juliet, 1188 CyberNative with heuristic labels; `python dataset/merge.py` writes them all into one `dataset/all.jsonl`) with per-source licenses, plus a script to pull more (OWASP Benchmark, CodeXGLUE/Devign, DiverseVul, Draper). Used to fine-tune the reviewer model (see "Fine-tuning") and as the retrieval corpus for "Local RAG". Counts, format, licenses: `dataset/README.md`. Findings also get an OWASP Top 10:2025 label and CWE Top 25 years (`spider/data/taxonomy.json`; `merge.py` adds them to the dataset).
+
+## Local RAG
+
+`spider rag index` builds a local SQLite index (`~/.spider/rag/index.db`, override with `SPIDER_RAG_DIR`) over the 1542 dataset samples and 90 reference entries (CWE notes, OWASP Top 10 2021/2025, OWASP API Security Top 10 2023, OWASP Top 10 for LLM Applications 2025, CWE Top 25). Search is hybrid: BM25 keywords plus vector similarity, fused by rank. During a review, the top similar vulnerable/fixed samples and matching references are added to the model prompt (disable with `--no-rag`). No hosted service, no pip dependency.
+
+```bash
+spider rag index              # hybrid index; falls back to keyword-only if the embedding model is missing
+spider rag index --lexical    # keyword-only, downloads nothing
+spider rag search "building an SQL query from user input"
+spider rag status
+```
+
+What downloads on first run: (1) the embedding model, `ollama pull nomic-embed-text` (about 274 MB, runs on CPU, fine for 4 GB VRAM); (2) about 3 MB of dataset files from this repo, only if there is no local `dataset/` folder (a plain `pip install`). After that it works offline. `spider start` does all of this for you.
+
+Honest status: tested with unit tests, a fake embedder, a real `nomic-embed-text` run on a 130-document subset (hybrid search returned sensible CWE-327 hits for "weak password hashing"), and the full 1632-document keyword index. The full hybrid index was not timed here (the 130-document subset took about 20 s on a small CPU box). **Not measured:** whether retrieval improves review quality with a real model; no before/after benchmark yet. The CyberNative-derived samples carry heuristic labels and no CWE. The OWASP API and LLM lists are in the index and in `taxonomy.json`, but not mapped onto the dataset rows (the official pages give almost no CWE links, so we did not invent a mapping).
+
+## Local training (`spider train`)
+
+Fine-tunes the reviewer model on this machine with the repo's own pipeline (`training/prep_data.py` then `training/train_qlora.py`; nothing is forked). `spider train` first detects your hardware (GPU, VRAM, RAM, WSL2) and prints it, then picks 4 GB-friendly settings: 4-bit NF4 loading, batch size 1, gradient accumulation 16, gradient checkpointing, a short sequence length. The trainer's own progress bar (step, loss, ETA) stays on your screen.
+
+```bash
+# inside WSL2 (Ubuntu) with the NVIDIA driver installed on Windows
+spider train --check             # hardware verdict only
+pip install torch transformers peft bitsandbytes accelerate sentencepiece   # or: spider train --install-deps
+spider train                     # asks before doing anything risky
+spider train --model-size 1b     # Llama 3.2 1B Instruct: fits 4 GB comfortably, weaker than 3B
+```
+
+Verdicts: **OK** (8 GB VRAM or more): 3B, 2048 tokens. **TIGHT** (about 4 to 8 GB, your T1200 has 4 GB): 3B with `max_seq 1024` and LoRA r 8, may run out of memory, and examples longer than the window are skipped; it offers the 1B model or Colab instead of just trying. **INSUFFICIENT** (no GPU, under 4 GB, or native Windows): it says why and points to `training/spider_finetune_colab.ipynb`. It never starts a run it expects to crash silently, and a failed run prints how to retry with the 1B model.
+
+First run downloads the base model from Hugging Face (about 6 GB for 3B, about 2.5 GB for 1B). When it finishes it prints where the LoRA adapter was saved and the two commands that merge it and load it into Ollama as `spider-reviewer` (`training/merge_export.py`, `training/convert_to_ollama.sh`), which SPIDER then uses by default.
+
+The trainer is Hugging Face transformers + peft + bitsandbytes QLoRA, **not Unsloth** (Unsloth is not wired in). `spider train` needs the repo's `training/` folder: if you installed with pip it clones the repo (about 3 MB) into `~/.spider/SPIDER`.
+
+Honest status: the hardware parsing, verdicts, option menu, command building, the setup question and the failure paths are unit-tested with mocks. **Not run:** a real training run through `spider train` (this Linux box has no GPU), anything on a T1200 or in WSL2, and the 1B base end to end. Whether the 3B fits in 4 GB is an estimate, not a measurement. The underlying `train_qlora.py` was run only on a tiny CPU model.
 
 ## Fine-tuning (train the model on the dataset)
 
@@ -116,7 +181,7 @@ Honest status: the data prep, training loop (on a tiny model), merge, tokenisati
 
 1. Better SAST: cross-file outline context and a recall/precision benchmark (`benchmark/`): **done (v0.2)**. Still open: running the benchmark across bigger models.
 2. Patch output (unified diffs): **done (v0.2)**.
-3. RAG over CWE/OWASP data: **done (v0.2)**, simple keyword retrieval, no embeddings yet.
+3. RAG over CWE/OWASP data: **done (v0.2)** keyword hints; **extended**: local hybrid RAG over the dataset and taxonomy (`spider rag`), one-command install and interactive loop (`spider start`). Retrieval quality not benchmarked yet.
 4. Web review: crawler, passive checks and agent loop with an enforced allowlist: **done (v0.3)**. Tested against a local test server and a fake model only.
 5. Verification stage: **done (v0.4)** as re-check plus model second opinion; no PoC execution by design. Tested with a local test server and a fake model only.
 6. Report improvements: **done (v0.5)**: summary by severity/OWASP/verification, a fix-first list (rejected findings are never recommended), HTML and SARIF output.
