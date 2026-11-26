@@ -95,7 +95,7 @@ The unit tests use a fake Ollama server and a local test web server on 127.0.0.1
 
 ## Dataset
 
-`dataset/` holds 1542 labeled samples (105 original, 89 OWASP Juice Shop, 100 Big-Vul, 60 NIST Juliet, 1188 CyberNative with heuristic labels; `python dataset/merge.py` writes them all into one `dataset/all.jsonl`) with per-source licenses, plus a script to pull more (OWASP Benchmark, CodeXGLUE/Devign, DiverseVul, Draper). Used to fine-tune the reviewer model (see "Fine-tuning"); not used for retrieval yet. Counts, format, licenses: `dataset/README.md`.
+`dataset/` holds 1542 labeled samples (105 original, 89 OWASP Juice Shop, 100 Big-Vul, 60 NIST Juliet, 1188 CyberNative with heuristic labels; `python dataset/merge.py` writes them all into one `dataset/all.jsonl`) with per-source licenses, plus a script to pull more (OWASP Benchmark, CodeXGLUE/Devign, DiverseVul, Draper). Used to fine-tune the reviewer model (see "Fine-tuning"); not used for retrieval yet. Counts, format, licenses: `dataset/README.md`. Findings also get an OWASP Top 10:2025 label and CWE Top 25 years (`spider/data/taxonomy.json`; `merge.py` adds them to the dataset).
 
 ## Fine-tuning (train the model on the dataset)
 
