@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 
-from . import __version__, patch, report, scanner
+from . import __version__, ollama, patch, report, scanner
 from .ollama import OllamaError
 
 
@@ -19,8 +19,9 @@ def code_main(argv):
                                 epilog="Web review of a running app: spider web URL --help",
                                 description="S.P.I.D.E.R phase 1: local-LLM SAST. Reviews YOUR OWN code for security flaws.")
     p.add_argument("target", help="file or folder to review")
-    p.add_argument("--model", default=os.environ.get("SPIDER_MODEL", "dolphinlabs/llama3.2-3b-uncensored"),
-                   help="Ollama model (default: dolphinlabs/llama3.2-3b-uncensored, env SPIDER_MODEL)")
+    p.add_argument("--model", default=None,
+                   help="Ollama model (default: env SPIDER_MODEL, else the fine-tuned 'spider-reviewer' if installed, "
+                        "else dolphinlabs/llama3.2-3b-uncensored)")
     p.add_argument("--host", default=os.environ.get("OLLAMA_HOST", "http://localhost:11434"))
     p.add_argument("--format", choices=list(report.RENDERERS), default="text")
     p.add_argument("-o", "--output", help="write report to this file")
@@ -38,6 +39,7 @@ def code_main(argv):
         return 1
     if not a.host.startswith("http"):
         a.host = "http://" + a.host
+    a.model = a.model or ollama.default_model(a.host)
     files = scanner.collect_files(a.target)
     if not files:
         print("error: no supported source files found", file=sys.stderr)
