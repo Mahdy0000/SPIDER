@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 
-from . import __version__, report, scanner
+from . import __version__, patch, report, scanner
 from .ollama import OllamaError
 
 
@@ -17,6 +17,8 @@ def main(argv=None):
     p.add_argument("-o", "--output", help="write report to this file")
     p.add_argument("--timeout", type=int, default=300, help="per-request timeout seconds")
     p.add_argument("--fail-on", choices=scanner.SEVERITIES, help="exit 2 if a finding at/above this severity exists")
+    p.add_argument("--patch", metavar="FILE", help="also write a unified diff of suggested fixes (never edits your files)")
+    p.add_argument("--no-rag", action="store_true", help="disable the local CWE/OWASP knowledge hints")
     p.add_argument("--version", action="version", version=__version__)
     a = p.parse_args(argv)
 
@@ -34,7 +36,8 @@ def main(argv=None):
     try:
         for n, f in enumerate(files, 1):
             print(f"[{n}/{len(files)}] reviewing {f}", file=sys.stderr)
-            findings += scanner.scan_file(f, a.host, a.model, a.timeout)
+            findings += scanner.scan_file(f, a.host, a.model, a.timeout, project_files=files,
+                                         root=a.target if os.path.isdir(a.target) else None, use_rag=not a.no_rag)
     except OllamaError as e:
         print(f"error: {e}", file=sys.stderr)
         return 1
@@ -49,6 +52,11 @@ def main(argv=None):
         print(f"report written to {a.output}", file=sys.stderr)
     else:
         print(out)
+    if a.patch:
+        diff = patch.build_patch(findings)
+        with open(a.patch, "w", encoding="utf-8") as fh:
+            fh.write(diff)
+        print(f"patch written to {a.patch} ({'empty' if not diff else 'review, then: git apply ' + a.patch})", file=sys.stderr)
     if a.fail_on:
         limit = scanner.SEVERITIES.index(a.fail_on)
         if any(scanner.SEVERITIES.index(f["severity"]) <= limit for f in findings):
