@@ -1,0 +1,5 @@
+[
+  {"file": "tests/fixtures/vulnerable_app.py", "expected": [
+    {"line": 7, "owasp": "A02"}, {"line": 12, "owasp": "A03"},
+    {"line": 16, "owasp": "A02"}, {"line": 20, "owasp": "A03"}]}
+]
