@@ -8,6 +8,15 @@ from .ollama import OllamaError
 
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else list(argv)
+    if argv and argv[0] == "rag":
+        from . import ragcli
+        return ragcli.main(argv[1:])
+    if argv and argv[0] == "start":
+        from . import start
+        return start.main(argv[1:])
+    if argv and argv[0] == "train":
+        from . import trainctl
+        return trainctl.main(argv[1:])
     if argv and argv[0] == "web":
         from . import webcli
         return webcli.main(argv[1:])
@@ -16,7 +25,7 @@ def main(argv=None):
 
 def code_main(argv):
     p = argparse.ArgumentParser(prog="spider",
-                                epilog="Web review of a running app: spider web URL --help",
+                                epilog="Web review of a running app: spider web URL --help. Local RAG index: spider rag --help. One-command setup + interactive loop: spider start. Local fine-tune: spider train",
                                 description="S.P.I.D.E.R phase 1: local-LLM SAST. Reviews YOUR OWN code for security flaws.")
     p.add_argument("target", help="file or folder to review")
     p.add_argument("--model", default=None,
