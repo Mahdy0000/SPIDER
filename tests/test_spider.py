@@ -81,9 +81,9 @@ class T(unittest.TestCase):
 
     def test_dataset_schema(self):
         d = os.path.join(os.path.dirname(__file__), "..", "dataset")
-        rows = [json.loads(l) for n in ("samples.jsonl", "juiceshop.jsonl") for l in open(os.path.join(d, n), encoding="utf-8")]
+        rows = [json.loads(l) for n in ("samples.jsonl", "juiceshop_1.jsonl", "juiceshop_2.jsonl", "bigvul.jsonl", "juliet.jsonl") for l in open(os.path.join(d, n), encoding="utf-8")]
         self.assertGreaterEqual(len({r["owasp"][:3] for r in rows}), 10)
-        self.assertGreaterEqual(len(rows), 150)
+        self.assertGreaterEqual(len(rows), 300)
         for r in rows:
             for k in ("id", "owasp", "language", "description", "vulnerable_code", "fixed_code", "source", "license"):
                 self.assertTrue(r[k], k)
