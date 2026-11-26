@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 
-from . import __version__, report, scanner
+from . import __version__, ollama, report, scanner
 from .ollama import OllamaError
 from .web import agent, checks, pages
 from .web.client import ScopedClient
@@ -22,7 +22,7 @@ def build_parser():
     p.add_argument("--no-probe", action="store_true", help="passive only: skip reflection, sensitive-path and CORS probes")
     p.add_argument("--agent", action="store_true", help="also run the LLM review agent loop (needs Ollama)")
     p.add_argument("--agent-steps", type=int, default=8)
-    p.add_argument("--model", default=os.environ.get("SPIDER_MODEL", "dolphinlabs/llama3.2-3b-uncensored"))
+    p.add_argument("--model", default=None, help="Ollama model (default: SPIDER_MODEL, else spider-reviewer if installed, else dolphinlabs/llama3.2-3b-uncensored)")
     p.add_argument("--host", default=os.environ.get("OLLAMA_HOST", "http://localhost:11434"))
     p.add_argument("--timeout", type=int, default=300)
     p.add_argument("--verify", action="store_true", help="re-check each finding on a fresh request before reporting")
@@ -46,6 +46,7 @@ def main(argv=None):
         return 1
     if not a.host.startswith("http"):
         a.host = "http://" + a.host
+    a.model = a.model or ollama.default_model(a.host)
     client = ScopedClient(scope, max_requests=a.max_requests, delay=a.delay)
     print(f"scope: {scope.describe()}", file=sys.stderr)
     try:
