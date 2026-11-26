@@ -88,6 +88,26 @@ class T(unittest.TestCase):
             for k in ("id", "owasp", "language", "description", "vulnerable_code", "fixed_code", "source", "license"):
                 self.assertTrue(r[k], k)
 
+class TestTaxonomy(unittest.TestCase):
+    def test_owasp_2025_and_top25(self):
+        from spider.owasp import owasp_2025, cwe_top25_years
+        self.assertEqual(owasp_2025("A03:2021 - Injection", "CWE-89"), "A05:2025 - Injection")
+        self.assertEqual(owasp_2025("A10", ""), "A01:2025 - Broken Access Control")  # SSRF merged into A01
+        self.assertEqual(owasp_2025("A06", ""), "A03:2025 - Software Supply Chain Failures")
+        self.assertEqual(owasp_2025("A05", "CWE-611"), "A02:2025 - Security Misconfiguration")
+        self.assertEqual(owasp_2025("nonsense", ""), "Unmapped")
+        self.assertEqual(cwe_top25_years("CWE-79"), [2021, 2022, 2023, 2024, 2025])
+        self.assertEqual(cwe_top25_years("CWE-1"), [])
+
+    def test_taxonomy_file(self):
+        import json, os
+        d = json.load(open(os.path.join(os.path.dirname(__file__), "..", "spider", "data", "taxonomy.json")))
+        self.assertEqual(sorted(d["cwe_top25"]["editions"]), ["2021", "2022", "2023", "2024", "2025"])
+        for e in d["cwe_top25"]["editions"].values():
+            self.assertEqual([r["rank"] for r in e["top25"]], list(range(1, 26)))
+        self.assertEqual(len(d["owasp_2025"]["names"]), 10)
+
+
 
 if __name__ == "__main__":
     unittest.main()
