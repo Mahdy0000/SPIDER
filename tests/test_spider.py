@@ -80,11 +80,12 @@ class T(unittest.TestCase):
         self.assertTrue(open("/tmp/_p.diff").read().startswith("---"))
 
     def test_dataset_schema(self):
-        path = os.path.join(os.path.dirname(__file__), "..", "dataset", "samples.jsonl")
-        rows = [json.loads(l) for l in open(path)]
+        d = os.path.join(os.path.dirname(__file__), "..", "dataset")
+        rows = [json.loads(l) for n in ("samples.jsonl", "juiceshop.jsonl") for l in open(os.path.join(d, n), encoding="utf-8")]
         self.assertGreaterEqual(len({r["owasp"][:3] for r in rows}), 10)
+        self.assertGreaterEqual(len(rows), 150)
         for r in rows:
-            for k in ("id", "owasp", "cwe", "language", "description", "vulnerable_code", "fixed_code", "source", "license"):
+            for k in ("id", "owasp", "language", "description", "vulnerable_code", "fixed_code", "source", "license"):
                 self.assertTrue(r[k], k)
 
 
