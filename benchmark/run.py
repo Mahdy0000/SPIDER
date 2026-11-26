@@ -8,7 +8,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from spider import scanner  # noqa: E402
+from spider import ollama, scanner  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 
@@ -29,10 +29,11 @@ def score(findings, expected, tol):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--model", default=os.environ.get("SPIDER_MODEL", "dolphinlabs/llama3.2-3b-uncensored"))
+    p.add_argument("--model", default=None, help="default: SPIDER_MODEL, else spider-reviewer if installed, else the stock model")
     p.add_argument("--host", default=os.environ.get("OLLAMA_HOST", "http://localhost:11434"))
     p.add_argument("--tolerance", type=int, default=2)
     a = p.parse_args()
+    a.model = a.model or ollama.default_model(a.host)
     cases = json.load(open(os.path.join(ROOT, "benchmark", "cases.json")))
     for c in cases:
         path = os.path.join(ROOT, c["file"])
