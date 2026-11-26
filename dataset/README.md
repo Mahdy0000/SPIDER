@@ -2,22 +2,24 @@
 
 Labeled vulnerable code samples, collected so a retrieval step (RAG) can use them later. **Not wired into the tool yet**; today retrieval uses only `spider/data/cwe.json`.
 
-## Contents: 354 samples in this repo
+**One file for training:** run `python dataset/merge.py` to write `dataset/all.jsonl` (every record, with source, license, OWASP and CWE fields). The shards below stay under 200 KB each because the repo is pushed through the GitHub web editor.
 
-| Category | original | Juice Shop | Big-Vul | Juliet | total |
-|---|---|---|---|---|---|
-| A01:2021 Broken Access Control | 14 | 18 | 13 | 2 | 47 |
-| A02:2021 Cryptographic Failures | 16 | 10 | 2 | 0 | 28 |
-| A03:2021 Injection | 20 | 36 | 11 | 4 | 71 |
-| A04:2021 Insecure Design | 7 | 3 | 0 | 0 | 10 |
-| A05:2021 Security Misconfiguration | 9 | 2 | 0 | 1 | 12 |
-| A06:2021 Vulnerable and Outdated Components | 5 | 2 | 0 | 0 | 7 |
-| A07:2021 Identification and Authentication Failures | 9 | 13 | 1 | 0 | 23 |
-| A08:2021 Software and Data Integrity Failures | 10 | 0 | 1 | 0 | 11 |
-| A09:2021 Security Logging and Monitoring Failures | 9 | 5 | 0 | 0 | 14 |
-| A10:2021 Server-Side Request Forgery | 6 | 0 | 0 | 0 | 6 |
-| N/A No OWASP Top 10 category (memory safety / other CWE) | 0 | 0 | 72 | 53 | 125 |
-| **total** | **105** | **89** | **100** | **60** | **354** |
+## Contents: 1542 samples in this repo
+
+| Category | original | Juice Shop | Big-Vul | Juliet | CyberNative | total |
+|---|---|---|---|---|---|---|
+| A01:2021 Broken Access Control | 14 | 18 | 13 | 2 | 103 | 150 |
+| A02:2021 Cryptographic Failures | 16 | 10 | 2 | 0 | 95 | 123 |
+| A03:2021 Injection | 20 | 36 | 11 | 4 | 400 | 471 |
+| A04:2021 Insecure Design | 7 | 3 | 0 | 0 | 189 | 199 |
+| A05:2021 Security Misconfiguration | 9 | 2 | 0 | 1 | 3 | 15 |
+| A06:2021 Vulnerable and Outdated Components | 5 | 2 | 0 | 0 | 1 | 8 |
+| A07:2021 Identification and Authentication Failures | 9 | 13 | 1 | 0 | 17 | 40 |
+| A08:2021 Software and Data Integrity Failures | 10 | 0 | 1 | 0 | 237 | 248 |
+| A09:2021 Security Logging and Monitoring Failures | 9 | 5 | 0 | 0 | 9 | 23 |
+| A10:2021 Server-Side Request Forgery | 6 | 0 | 0 | 0 | 1 | 7 |
+| N/A No OWASP Top 10 category (memory safety / other CWE) | 0 | 0 | 72 | 53 | 133 | 258 |
+| **total** | **105** | **89** | **100** | **60** | **1188** | **1542** |
 
 Languages: c 126, typescript 69, python 37, cpp 34, javascript 29, java 15, yaml 13, php 10, sol 6, go 5, dockerfile 2, text 2, tf 2, json 1, xml 1, shell 1, html 1.
 
@@ -31,6 +33,7 @@ Web-app OWASP categories (A01 to A10) come mostly from the original and Juice Sh
 | `juiceshop_1.jsonl`, `juiceshop_2.jsonl` | [OWASP Juice Shop](https://github.com/juice-shop/juice-shop) coding challenges | each incorrect candidate fix paired with the correct fix | MIT, (c) 2014-2026 Bjoern Kimminich & the OWASP Juice Shop contributors |
 | `bigvul.jsonl` | [Big-Vul](https://github.com/ZeoVan/MSR_20_Code_vulnerability_CSV_Dataset) (Fan et al., MSR 2020), via https://huggingface.co/datasets/bstee615/bigvul | CVE-fixing commits: function before (vulnerable) and after (fixed), CWE labels, C/C++ | MIT, (c) 2020 ZeoVan |
 | `juliet.jsonl` | [NIST Juliet C/C++ 1.3](https://samate.nist.gov/SARD/test-suites/112) via https://huggingface.co/datasets/LorenzH/juliet_test_suite_c_1_3 | synthetic test cases: bad and good variant, CWE from file name | CC0-1.0 per the mirror card; NIST test suite for public use |
+| `cybernative_1.jsonl` ... `cybernative_10.jsonl` | [CyberNative/Code_Vulnerability_Security_DPO](https://huggingface.co/datasets/CyberNative/Code_Vulnerability_Security_DPO) | LLM-generated vulnerable (`rejected`) and secure (`chosen`) code, 8+ languages. OWASP category and a typical CWE are assigned by keyword rules on the description (HEURISTIC labels, not verified; no CWE for rows without a clear match, which are skipped). Capped per category, regenerate with `fetch.py cybernative` | Apache-2.0 per the dataset card |
 
 Big-Vul sample: at most a few functions per CWE, functions up to 1800 chars. Juliet sample: at most 3 per CWE, files up to 2200 chars. Both are samples, not the full sets.
 
@@ -53,7 +56,7 @@ JSONL, one object per line:
 
 | field | meaning |
 |---|---|
-| id | prefix + number: `O` original, `J` Juice Shop, `B` Big-Vul, `U` Juliet, `D` DiverseVul, `R` Draper, `X` CodeXGLUE, `W` Benchmark |
+| id | prefix + number: `O` original, `J` Juice Shop, `B` Big-Vul, `U` Juliet, `C` CyberNative, `D` DiverseVul, `R` Draper, `X` CodeXGLUE, `W` Benchmark |
 | owasp | OWASP Top 10 (2021) category, or `N/A - ...` when the CWE has none |
 | cwe | CWE id; empty when the source has none |
 | language | language of the snippet |
